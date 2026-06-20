@@ -1,0 +1,10 @@
+# Code owners — 既定で全変更のレビューを自動リクエストします。
+# 詳細: https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
+
+# 既定のオーナー (全ファイル)
+* @itouhi
+
+# 必要に応じて領域ごとに追加できます (例):
+# /backend/   @itouhi
+# /frontend/  @itouhi
+# /.github/   @itouhi

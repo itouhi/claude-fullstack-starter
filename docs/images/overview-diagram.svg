@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820" font-family="'Noto Sans CJK JP','Hiragino Sans','Yu Gothic',sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2f9e44"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#c2410c"/>
+    </marker>
+    <style>
+      .band { fill:#f1f5f9; stroke:#e2e8f0; }
+      .blabel { font-size:15px; font-weight:700; fill:#0f1b2d; }
+      .box { rx:9; stroke-width:1.5; }
+      .fe { fill:#e7f0ff; stroke:#4a78c8; }
+      .be { fill:#e9f7e9; stroke:#2f9e44; }
+      .acc { fill:#fdece3; stroke:#c2410c; }
+      .neutral { fill:#ffffff; stroke:#94a3b8; }
+      .main { fill:#fff7e6; stroke:#d97706; stroke-width:2; }
+      .t { font-size:15px; font-weight:700; fill:#1c2733; }
+      .sub { font-size:12px; fill:#5b6b7b; }
+      .edge { stroke:#475569; stroke-width:1.6; fill:none; }
+      .edgeGreen { stroke:#2f9e44; stroke-width:1.8; fill:none; }
+      .edgeRed { stroke:#c2410c; stroke-width:1.8; fill:none; }
+      .dash { stroke-dasharray:5 4; }
+      .elabel { font-size:11.5px; fill:#475569; }
+    </style>
+  </defs>
+
+  <!-- title bar -->
+  <rect x="0" y="0" width="1280" height="60" fill="#0f1b2d"/>
+  <text x="40" y="38" font-size="23" font-weight="700" fill="#ffffff">claude-fullstack-starter — リポジトリ概要 <tspan fill="#ffd43b">イメージ図</tspan></text>
+  <text x="1240" y="38" font-size="13" fill="#9fb0c2" text-anchor="end">Vue 3 + Vite + TS × FastAPI</text>
+
+  <!-- ============ Band 1: アプリ構成 ============ -->
+  <rect class="band" x="24" y="80" width="1232" height="190"/>
+  <text class="blabel" x="40" y="106">① アプリ構成（実行時）</text>
+
+  <rect class="box fe" x="50" y="128" width="200" height="78"/>
+  <text class="t" x="150" y="160" text-anchor="middle">ブラウザ</text>
+  <text class="sub" x="150" y="182" text-anchor="middle">Vue 3 SPA (App.vue)</text>
+
+  <rect class="box fe" x="330" y="128" width="210" height="78"/>
+  <text class="t" x="435" y="160" text-anchor="middle">services/api.ts</text>
+  <text class="sub" x="435" y="182" text-anchor="middle">通信を集約（直接 fetch しない）</text>
+
+  <rect class="box fe" x="620" y="128" width="210" height="78"/>
+  <text class="t" x="725" y="160" text-anchor="middle">Vite dev :5173</text>
+  <text class="sub" x="725" y="182" text-anchor="middle">/api/* を proxy 転送</text>
+
+  <rect class="box be" x="910" y="128" width="240" height="78"/>
+  <text class="t" x="1030" y="160" text-anchor="middle">FastAPI :8000</text>
+  <text class="sub" x="1030" y="182" text-anchor="middle">/api prefix + ルーター ・ /health</text>
+
+  <line class="edge" x1="250" y1="167" x2="328" y2="167" marker-end="url(#arrow)"/>
+  <line class="edge" x1="540" y1="167" x2="618" y2="167" marker-end="url(#arrow)"/>
+  <text class="elabel" x="579" y="156" text-anchor="middle">GET /api/hello</text>
+  <line class="edge" x1="830" y1="167" x2="908" y2="167" marker-end="url(#arrow)"/>
+  <text class="elabel" x="869" y="156" text-anchor="middle">proxy</text>
+
+  <!-- ============ Band 2: 開発フロー & 品質ゲート ============ -->
+  <rect class="band" x="24" y="290" width="1232" height="230"/>
+  <text class="blabel" x="40" y="316">② 開発フロー &amp; 品質ゲート（main は Ruleset 保護）</text>
+
+  <rect class="box neutral" x="60" y="346" width="150" height="66"/>
+  <text class="t" x="135" y="376" text-anchor="middle">feature</text>
+  <text class="sub" x="135" y="396" text-anchor="middle">main から分岐</text>
+
+  <rect class="box neutral" x="250" y="346" width="120" height="66"/>
+  <text class="t" x="310" y="376" text-anchor="middle">PR 作成</text>
+  <text class="sub" x="310" y="396" text-anchor="middle">base=main</text>
+
+  <rect class="box be" x="410" y="346" width="220" height="66"/>
+  <text class="t" x="520" y="376" text-anchor="middle">CI 実行</text>
+  <text class="sub" x="520" y="396" text-anchor="middle">backend / frontend</text>
+
+  <rect class="box acc" x="670" y="346" width="140" height="66"/>
+  <text class="t" x="740" y="376" text-anchor="middle">CI 緑？</text>
+  <text class="sub" x="740" y="396" text-anchor="middle">Ruleset で判定</text>
+
+  <rect class="box main" x="860" y="346" width="220" height="66"/>
+  <text class="t" x="970" y="376" text-anchor="middle">main</text>
+  <text class="sub" x="970" y="396" text-anchor="middle">PR必須 + 必須チェック + strict</text>
+
+  <rect class="box acc" x="670" y="446" width="410" height="52"/>
+  <text class="t" x="875" y="470" text-anchor="middle" fill="#c2410c">BLOCKED — マージ不可（admin もバイパス不可）</text>
+  <text class="sub" x="875" y="488" text-anchor="middle">--admin でも Repository rule violations で拒否</text>
+
+  <line class="edge" x1="210" y1="379" x2="248" y2="379" marker-end="url(#arrow)"/>
+  <line class="edge" x1="370" y1="379" x2="408" y2="379" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="379" x2="668" y2="379" marker-end="url(#arrow)"/>
+  <line class="edgeGreen" x1="810" y1="379" x2="858" y2="379" marker-end="url(#arrowGreen)"/>
+  <text class="elabel" x="834" y="370" text-anchor="middle" fill="#2f9e44">緑→可</text>
+  <line class="edgeRed" x1="740" y1="412" x2="740" y2="444" marker-end="url(#arrowRed)"/>
+  <text class="elabel" x="770" y="432" fill="#c2410c">失敗</text>
+
+  <!-- ============ Band 3: sandbox 検証環境 ============ -->
+  <rect class="band" x="24" y="540" width="1232" height="240"/>
+  <text class="blabel" x="40" y="566">③ sandbox 検証環境（main に触れず保護挙動を再現）</text>
+
+  <rect class="box main" x="60" y="596" width="170" height="66"/>
+  <text class="t" x="145" y="626" text-anchor="middle">main</text>
+  <text class="sub" x="145" y="646" text-anchor="middle">本番</text>
+
+  <rect class="box acc" x="300" y="596" width="220" height="66"/>
+  <text class="t" x="410" y="626" text-anchor="middle">sandbox/main</text>
+  <text class="sub" x="410" y="646" text-anchor="middle">main ミラー ・ 同等 Ruleset</text>
+
+  <rect class="box neutral" x="590" y="596" width="210" height="66"/>
+  <text class="t" x="695" y="626" text-anchor="middle">sandbox/&lt;名前&gt;</text>
+  <text class="sub" x="695" y="646" text-anchor="middle">使い捨て検証ブランチ</text>
+
+  <rect class="box be" x="870" y="596" width="210" height="66"/>
+  <text class="t" x="975" y="626" text-anchor="middle">Sandbox CI</text>
+  <text class="sub" x="975" y="646" text-anchor="middle">backend / frontend</text>
+
+  <line class="edge dash" x1="230" y1="629" x2="298" y2="629" marker-end="url(#arrow)"/>
+  <text class="elabel" x="264" y="620" text-anchor="middle">ミラー</text>
+  <line class="edge" x1="520" y1="629" x2="588" y2="629" marker-end="url(#arrow)"/>
+  <text class="elabel" x="554" y="620" text-anchor="middle">分岐</text>
+  <line class="edge" x1="800" y1="629" x2="868" y2="629" marker-end="url(#arrow)"/>
+  <text class="elabel" x="834" y="620" text-anchor="middle">PR(base=sandbox/main)</text>
+
+  <rect class="box neutral" x="60" y="694" width="1020" height="58"/>
+  <text class="t" x="80" y="718" text-anchor="start">block-sandbox-pr.yml</text>
+  <text class="sub" x="80" y="738" text-anchor="start">sandbox/* → main / dev の PR は自動クローズ（誤マージ防止）。 sandbox/** → sandbox/main の PR は許可（検証用）。 ※ pull_request_target は main の定義で動作。</text>
+</svg>

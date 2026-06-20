@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>claude-fullstack-starter — リポジトリ概要</title>
+    <style>
+      :root {
+        --bg: #0f1b2d;
+        --panel: #ffffff;
+        --ink: #1c2733;
+        --muted: #5b6b7b;
+        --be: #2f9e44;
+        --fe: #4a78c8;
+        --acc: #c2410c;
+        --line: #e2e8f0;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1280px; height: 720px; }
+      body {
+        font-family: "Noto Sans CJK JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        background: linear-gradient(135deg, #0f1b2d 0%, #1c3350 100%);
+        color: var(--ink);
+        padding: 40px 48px;
+        display: flex;
+        flex-direction: column;
+      }
+      header { color: #fff; margin-bottom: 22px; }
+      header h1 { font-size: 40px; letter-spacing: 0.5px; }
+      header h1 .accent { color: #ffd43b; }
+      header p { font-size: 17px; color: #b9c6d6; margin-top: 6px; }
+      .grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: 1fr;
+        gap: 16px;
+      }
+      .card {
+        background: var(--panel);
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        border-top: 4px solid var(--fe);
+        display: flex;
+        flex-direction: column;
+      }
+      .card.be { border-top-color: var(--be); }
+      .card.acc { border-top-color: var(--acc); }
+      .card h2 { font-size: 17px; margin-bottom: 9px; display: flex; align-items: center; gap: 7px; }
+      .card h2 .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--fe); }
+      .card.be h2 .dot { background: var(--be); }
+      .card.acc h2 .dot { background: var(--acc); }
+      .card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+      .card li { font-size: 13px; color: var(--ink); line-height: 1.45; padding-left: 14px; position: relative; }
+      .card li::before { content: "▸"; position: absolute; left: 0; color: var(--muted); }
+      .card li b { color: var(--acc); font-weight: 700; }
+      code { font-family: "DejaVu Sans Mono", monospace; font-size: 12px; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; color: #334155; }
+      footer { margin-top: 18px; color: #9fb0c2; font-size: 12px; display: flex; justify-content: space-between; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>claude-fullstack-starter <span class="accent">概要</span></h1>
+      <p>Vue 3 + Vite + TypeScript &times; FastAPI / VSCode Dev Container — 開発プロセスと品質ゲートの全体像</p>
+    </header>
+
+    <div class="grid">
+      <div class="card be">
+        <h2><span class="dot"></span>技術スタック</h2>
+        <ul>
+          <li><b>Backend</b>: FastAPI / Python 3.12 / Pydantic / pytest / ruff</li>
+          <li><b>Frontend</b>: Vue 3 (Composition API + <code>script setup</code>) / Vite / TS</li>
+          <li><b>環境</b>: VSCode Dev Container (Ubuntu)</li>
+          <li><b>CI</b>: GitHub Actions (ruff / pytest / eslint / type-check)</li>
+        </ul>
+      </div>
+
+      <div class="card fe">
+        <h2><span class="dot"></span>リポジトリ構造</h2>
+        <ul>
+          <li><code>backend/app</code>: api(ルーター集約) / config / main</li>
+          <li><code>frontend/src</code>: services(API集約) / App.vue / main.ts</li>
+          <li><code>.github/workflows</code>: CI・保護・sandbox</li>
+          <li><code>.claude/skills</code> + <code>CLAUDE.md</code>: 規約とスキル</li>
+          <li><code>docs/</code>: 構造・プロセスの図解資料</li>
+        </ul>
+      </div>
+
+      <div class="card acc">
+        <h2><span class="dot"></span>リクエストの流れ</h2>
+        <ul>
+          <li>ブラウザ → Vite dev (5173)</li>
+          <li><code>/api/*</code> を Vite proxy で backend (8000) へ</li>
+          <li>FastAPI: <code>/api</code> prefix + ルーター</li>
+          <li>フロントは必ず <code>services/</code> 経由で通信</li>
+        </ul>
+      </div>
+
+      <div class="card fe">
+        <h2><span class="dot"></span>ブランチ戦略</h2>
+        <ul>
+          <li><b>main</b>: リリース対象 (Ruleset 保護)</li>
+          <li><b>dev</b>: 統合ブランチ</li>
+          <li><code>feat/*</code> <code>fix/*</code> <code>docs/*</code> <code>ci/*</code>: 作業</li>
+          <li><b>sandbox/main</b>: 検証の基点 (main ミラー)</li>
+          <li><code>sandbox/&lt;名前&gt;</code>: 使い捨て検証</li>
+        </ul>
+      </div>
+
+      <div class="card be">
+        <h2><span class="dot"></span>CI ワークフロー</h2>
+        <ul>
+          <li><code>ci.yml</code>: main/dev の品質チェック</li>
+          <li><code>sandbox-ci.yml</code>: sandbox/** で CI 実行</li>
+          <li><code>block-sandbox-pr.yml</code>: sandbox/* → main を自動クローズ</li>
+          <li>ジョブ: <b>backend</b> / <b>frontend</b></li>
+        </ul>
+      </div>
+
+      <div class="card acc">
+        <h2><span class="dot"></span>ブランチ保護 (Rulesets)</h2>
+        <ul>
+          <li>PR 必須 + 必須チェック <b>backend / frontend</b></li>
+          <li>strict (最新取込) / force push・削除禁止</li>
+          <li>bypass なし = <b>admin もマージ不可</b></li>
+          <li>CI 緑のときだけマージ可能</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <span>スキル開発フロー: write-dev-docs → add-* → test → /code-review → push-changes (run-dev-cycle で一気通貫)</span>
+      <span>2026-06-20</span>
+    </footer>
+  </body>
+</html>
