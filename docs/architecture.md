@@ -8,7 +8,7 @@ FastAPI (backend) と Vue 3 (frontend) を 1 リポジトリで管理する構�
 
 | レイヤ | 技術 |
 |---|---|
-| Backend | FastAPI / Python 3.12 / Pydantic / pytest / ruff |
+| Backend | FastAPI / Python 3.14 / Pydantic / pytest / ruff |
 | Frontend | Vue 3 (Composition API + `<script setup>`) / Vite / TypeScript / ESLint |
 | 環境 | VSCode Dev Container (Ubuntu) |
 | CI | GitHub Actions (ruff / pytest / eslint / type-check) |

@@ -8,7 +8,7 @@ FastAPI (backend) and Vue 3 (frontend) live in a single repository. Development 
 
 | Layer | Tech |
 |---|---|
-| Backend | FastAPI / Python 3.12 / Pydantic / pytest / ruff |
+| Backend | FastAPI / Python 3.14 / Pydantic / pytest / ruff |
 | Frontend | Vue 3 (Composition API + `<script setup>`) / Vite / TypeScript / ESLint |
 | Environment | VSCode Dev Container (Ubuntu) |
 | CI | GitHub Actions (ruff / pytest / eslint / type-check) |

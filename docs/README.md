@@ -18,7 +18,7 @@
 flowchart LR
     subgraph repo["リポジトリ claude-fullstack-starter"]
         direction TB
-        be["backend<br/>FastAPI (Python 3.12)"]
+        be["backend<br/>FastAPI (Python 3.14)"]
         fe["frontend<br/>Vue 3 + Vite + TS"]
         wf[".github/workflows<br/>CI / 保護 / sandbox"]
         sk[".claude/skills<br/>+ CLAUDE.md"]

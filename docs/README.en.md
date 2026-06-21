@@ -18,7 +18,7 @@ Diagrams of this repository's **structure** and **development process**.
 flowchart LR
     subgraph repo["repo: claude-fullstack-starter"]
         direction TB
-        be["backend<br/>FastAPI (Python 3.12)"]
+        be["backend<br/>FastAPI (Python 3.14)"]
         fe["frontend<br/>Vue 3 + Vite + TS"]
         wf[".github/workflows<br/>CI / protection / sandbox"]
         sk[".claude/skills<br/>+ CLAUDE.md"]

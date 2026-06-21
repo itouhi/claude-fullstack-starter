@@ -5,7 +5,7 @@
 [![CI](https://github.com/itouhi/claude-fullstack-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/itouhi/claude-fullstack-starter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A full-stack development template with FastAPI (Python 3.12) + Vue 3 + Vite + TypeScript.
+A full-stack development template with FastAPI (Python 3.14) + Vue 3 + Vite + TypeScript.
 It ships with a VSCode Dev Container, CI via GitHub Actions, branch protection (Rulesets), Claude Code skills, and development-process documentation.
 
 ![Overview diagram](docs/images/overview-diagram.svg)
