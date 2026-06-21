@@ -20,9 +20,9 @@ FastAPI (backend) and Vue 3 (frontend) live in a single repository. Development 
 ├── .devcontainer/             # Dev Container config
 ├── .claude/skills/            # Claude Code project skills
 ├── .github/workflows/         # CI / branch protection / sandbox CI
-│   ├── ci.yml                 # CI for main/dev (backend/frontend)
+│   ├── ci.yml                 # CI for main (backend/frontend)
 │   ├── sandbox-ci.yml         # CI for sandbox/**
-│   └── block-sandbox-pr.yml   # auto-close sandbox/* -> main/dev PRs
+│   └── block-sandbox-pr.yml   # auto-close sandbox/* -> main PRs
 ├── backend/
 │   ├── app/
 │   │   ├── api/               # routers (aggregated in __init__.py)

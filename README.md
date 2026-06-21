@@ -126,12 +126,12 @@ npm run format         # Prettier
 
 ## ブランチ運用 & 品質ゲート
 
-- `main` (リリース) / `dev` (統合) を基点に、`feat/*` `fix/*` `docs/*` `ci/*` の作業ブランチを切って PR を出す。
+- `main` (リリース) を基点に、`feat/*` `fix/*` `docs/*` `ci/*` の作業ブランチを切って PR を出す。
 - `main` は **Rulesets で保護**: PR 必須 + CI (`backend` / `frontend`) 必須 + strict (最新取込)、bypass なし (管理者もマージ不可)。**CI が緑のときだけマージできる。**
 - **CI ワークフロー** (`.github/workflows/`):
-  - `ci.yml` — `main` / `dev` の品質チェック
+  - `ci.yml` — `main` の品質チェック
   - `sandbox-ci.yml` — `sandbox/**` の検証用 CI
-  - `block-sandbox-pr.yml` — `sandbox/*` → `main` / `dev` の PR を自動クローズ (誤マージ防止)。`sandbox/**` → `sandbox/main` は許可
+  - `block-sandbox-pr.yml` — `sandbox/*` → `main` の PR を自動クローズ (誤マージ防止)。`sandbox/**` → `sandbox/main` は許可
 - `sandbox/main` は `main` をミラーした sandbox 検証の基点で、`main` と同等の保護を適用。`sandbox/<名前>` で使い捨ての検証ブランチを切って、本番に触れず保護挙動を試せる。
 
 詳細は [docs/development-process.md](docs/development-process.md) を参照。

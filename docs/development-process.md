@@ -9,15 +9,13 @@
 | ブランチ | 役割 | 保護 |
 |---|---|---|
 | `main` | リリース対象。常にグリーン | ✅ Ruleset (PR必須 + CI必須) |
-| `dev` | 統合ブランチ | CI 対象 (push/PR) |
-| `feat/*` `fix/*` `docs/*` `ci/*` | 機能/修正単位の作業ブランチ | PR で main/dev へ |
+| `feat/*` `fix/*` `docs/*` `ci/*` | 機能/修正単位の作業ブランチ | PR で main へ |
 | `sandbox/main` | sandbox 検証の基点 (main ミラー) | ✅ Ruleset (main と同等) |
 | `sandbox/<名前>` | 使い捨ての検証ブランチ | — |
 
 ```mermaid
 gitGraph
     commit id: "init"
-    branch dev
     branch feature
     commit id: "feat"
     commit id: "test"
@@ -25,7 +23,7 @@ gitGraph
     merge feature tag: "PR + CI green"
 ```
 
-> `feature` を `main` から切って実装し、CI 緑で `main` へマージします。`dev` は統合ブランチで、`main` への取り込みは PR 経由で行います。
+> `feature` を `main` から切って実装し、CI 緑で `main` へマージします。`main` への取り込みは PR 経由で行います。
 
 > **命名規約の制約**: git の参照仕様上、`sandbox` 単体ブランチと `sandbox/*` は共存できません。そのため sandbox 系はすべて `sandbox/<名前>` の階層に統一しています。
 
@@ -36,7 +34,7 @@ gitGraph
 ```mermaid
 flowchart TB
     subgraph wf[".github/workflows"]
-        ci["ci.yml<br/>trigger: push/PR → main, dev"]
+        ci["ci.yml<br/>trigger: push/PR → main"]
         sci["sandbox-ci.yml<br/>trigger: push/PR → sandbox/**"]
         blk["block-sandbox-pr.yml<br/>trigger: pull_request_target"]
     end
@@ -46,7 +44,7 @@ flowchart TB
     blk --> close["head=sandbox/* かつ base≠sandbox/* の PR を<br/>自動クローズ + コメント"]
 ```
 
-- **`ci.yml`** — `main` / `dev` 向け。`backend` と `frontend` の品質チェックを実行。Vitest は `npm run test --if-present` でテスト未導入ブランチでも落ちない。
+- **`ci.yml`** — `main` 向け。`backend` と `frontend` の品質チェックを実行。Vitest は `npm run test --if-present` でテスト未導入ブランチでも落ちない。
 - **`sandbox-ci.yml`** — `sandbox/**` 向け。本体 CI は sandbox をスキップするため、sandbox 環境でも CI を回せるよう別途用意。`main` にも配置済みで、main から切った sandbox ブランチが自動継承する。
 - **`block-sandbox-pr.yml`** — `sandbox/*` の取り込み防止。
 
@@ -93,7 +91,7 @@ flowchart TB
 ```
 
 - `sandbox/** → sandbox/main` の PR は **許可** (検証用)。
-- `sandbox/* → main` / `→ dev` の PR は **自動クローズ** (誤マージ防止)。
+- `sandbox/* → main` の PR は **自動クローズ** (誤マージ防止)。
 
 ## 5. スキルベース開発フロー
 
@@ -140,7 +138,7 @@ sequenceDiagram
     end
 ```
 
-1. `main` / `dev` から作業ブランチを切る (`sandbox/` 接頭辞は使わない)。
+1. `main` から作業ブランチを切る (`sandbox/` 接頭辞は使わない)。
 2. 実装し、`push-changes` で関心事ごとにコミット。
 3. PR を作成 → CI (`backend` / `frontend`) が緑になるまでマージ不可。
 4. 緑になったらマージ。`main` へは PR + CI 必須が Ruleset で強制される。

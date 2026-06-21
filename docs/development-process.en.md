@@ -9,15 +9,13 @@ This document covers the skill-based implementation flow combined with CI, branc
 | Branch | Role | Protection |
 |---|---|---|
 | `main` | Release target. Always green | ✅ Ruleset (PR required + CI required) |
-| `dev` | Integration branch | CI target (push/PR) |
-| `feat/*` `fix/*` `docs/*` `ci/*` | Per feature/fix work branches | PR into main/dev |
+| `feat/*` `fix/*` `docs/*` `ci/*` | Per feature/fix work branches | PR into main |
 | `sandbox/main` | Base for sandbox verification (mirror of main) | ✅ Ruleset (same as main) |
 | `sandbox/<name>` | Throwaway verification branch | — |
 
 ```mermaid
 gitGraph
     commit id: "init"
-    branch dev
     branch feature
     commit id: "feat"
     commit id: "test"
@@ -25,7 +23,7 @@ gitGraph
     merge feature tag: "PR + CI green"
 ```
 
-> Cut `feature` off `main`, implement, and merge into `main` once CI is green. `dev` is the integration branch; promotion into `main` always goes through a PR.
+> Cut `feature` off `main`, implement, and merge into `main` once CI is green. Promotion into `main` always goes through a PR.
 
 > **Naming constraint**: Due to git's ref rules, a plain `sandbox` branch and `sandbox/*` cannot coexist. Therefore all sandbox branches use the `sandbox/<name>` hierarchy.
 
@@ -36,7 +34,7 @@ Three workflows divide the responsibilities.
 ```mermaid
 flowchart TB
     subgraph wf[".github/workflows"]
-        ci["ci.yml<br/>trigger: push/PR → main, dev"]
+        ci["ci.yml<br/>trigger: push/PR → main"]
         sci["sandbox-ci.yml<br/>trigger: push/PR → sandbox/**"]
         blk["block-sandbox-pr.yml<br/>trigger: pull_request_target"]
     end
@@ -46,7 +44,7 @@ flowchart TB
     blk --> close["auto-close + comment PRs where<br/>head=sandbox/* and base≠sandbox/*"]
 ```
 
-- **`ci.yml`** — For `main` / `dev`. Runs `backend` and `frontend` quality checks. Vitest uses `npm run test --if-present`, so branches without tests do not fail.
+- **`ci.yml`** — For `main`. Runs `backend` and `frontend` quality checks. Vitest uses `npm run test --if-present`, so branches without tests do not fail.
 - **`sandbox-ci.yml`** — For `sandbox/**`. The main CI skips sandbox, so this runs CI in sandbox environments too. It also lives on `main`, so sandbox branches cut from main inherit it.
 - **`block-sandbox-pr.yml`** — Prevents merging sandbox branches.
 
@@ -93,7 +91,7 @@ flowchart TB
 ```
 
 - PRs `sandbox/** → sandbox/main` are **allowed** (for verification).
-- PRs `sandbox/* → main` / `→ dev` are **auto-closed** (to prevent accidental merges).
+- PRs `sandbox/* → main` are **auto-closed** (to prevent accidental merges).
 
 ## 5. Skill-based development flow
 
@@ -140,7 +138,7 @@ sequenceDiagram
     end
 ```
 
-1. Cut a work branch off `main` / `dev` (do not use the `sandbox/` prefix).
+1. Cut a work branch off `main` (do not use the `sandbox/` prefix).
 2. Implement and commit per concern with `push-changes`.
 3. Open a PR → cannot merge until CI (`backend` / `frontend`) is green.
 4. Merge once green. The Ruleset enforces PR + required CI for `main`.

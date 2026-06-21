@@ -9,8 +9,8 @@
 
 ## ブランチ運用
 
-- `main`（リリース）/ `dev`（統合）から **`feat/*` `fix/*` `docs/*` `ci/*`** などの作業ブランチを切ります。
-- **`sandbox/` 接頭辞は使わないでください。** `sandbox/*` を head とし `main` / `dev` を base とする PR は CI（`block-sandbox-pr.yml`）が**自動クローズ**します（sandbox はスキル検証専用）。
+- `main`（リリース）から **`feat/*` `fix/*` `docs/*` `ci/*`** などの作業ブランチを切ります。
+- **`sandbox/` 接頭辞は使わないでください。** `sandbox/*` を head とし `main` を base とする PR は CI（`block-sandbox-pr.yml`）が**自動クローズ**します（sandbox はスキル検証専用）。
 - 詳細は [docs/development-process.md](docs/development-process.md) を参照。
 
 ## 変更の流れ
@@ -25,7 +25,7 @@
    cd frontend && npm run lint && npm run type-check
    ```
 4. コミットは **関心事ごとに分割**し、[Conventional Commits](https://www.conventionalcommits.org/) に揃えます（`feat:` `fix:` `docs:` `ci:` `chore:` など）。
-5. `main` / `dev` 向けに PR を作成。
+5. `main` 向けに PR を作成。
 
 ## マージ条件（ブランチ保護）
 

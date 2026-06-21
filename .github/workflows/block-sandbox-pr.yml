@@ -1,6 +1,6 @@
 name: Block sandbox PRs
 
-# sandbox/* はスキル検証専用の使い捨てブランチ (複数 sandbox 環境)。main/dev 等への取り込みは受け付けない。
+# sandbox/* はスキル検証専用の使い捨てブランチ (複数 sandbox 環境)。main への取り込みは受け付けない。
 # head が sandbox/* かつ base が sandbox/* でない PR を自動でクローズしてコメントする。
 # sandbox/** 同士の PR (例: sandbox/foo -> sandbox/main) は検証用途のため許可する。
 # (git の参照制約上 `sandbox` 単体ブランチと `sandbox/*` は共存できないため、すべて sandbox/* に統一)
@@ -28,5 +28,5 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
         run: |
           gh pr comment "$PR" --repo "$REPO" --body \
-            "🚫 \`sandbox/*\` はスキル検証専用ブランチのため main/dev 等への PR を受け付けません。この PR は自動クローズされました。変更を取り込みたい場合は \`main\` からフィーチャーブランチを切り直してください。(sandbox/** 同士の PR は許可されています)"
+            "🚫 \`sandbox/*\` はスキル検証専用ブランチのため main への PR を受け付けません。この PR は自動クローズされました。変更を取り込みたい場合は \`main\` からフィーチャーブランチを切り直してください。(sandbox/** 同士の PR は許可されています)"
           gh pr close "$PR" --repo "$REPO"

@@ -126,12 +126,12 @@ See each `SKILL.md` and [CLAUDE.md](CLAUDE.md) for details.
 
 ## Branch workflow & quality gate
 
-- Branch off `main` (release) / `dev` (integration) with `feat/*` `fix/*` `docs/*` `ci/*` work branches and open a PR.
+- Branch off `main` (release) with `feat/*` `fix/*` `docs/*` `ci/*` work branches and open a PR.
 - `main` is **protected by Rulesets**: PR required + required checks (`backend` / `frontend`) + strict (up to date), no bypass (admins cannot merge either). **You can only merge when CI is green.**
 - **CI workflows** (`.github/workflows/`):
-  - `ci.yml` — quality checks for `main` / `dev`
+  - `ci.yml` — quality checks for `main`
   - `sandbox-ci.yml` — CI for `sandbox/**`
-  - `block-sandbox-pr.yml` — auto-closes `sandbox/*` → `main` / `dev` PRs (prevents accidental merges). `sandbox/**` → `sandbox/main` is allowed.
+  - `block-sandbox-pr.yml` — auto-closes `sandbox/*` → `main` PRs (prevents accidental merges). `sandbox/**` → `sandbox/main` is allowed.
 - `sandbox/main` mirrors `main` as the base for sandbox verification with the same protection. Cut throwaway `sandbox/<name>` branches to try protection behavior without touching production.
 
 See [docs/development-process.en.md](docs/development-process.en.md) for details.
