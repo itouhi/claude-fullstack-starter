@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { fetchHello } from "@/services/api";
+import SumWidget from "@/components/SumWidget.vue";
 
 const message = ref("loading...");
 const name = ref("world");
@@ -24,5 +25,6 @@ onMounted(load);
       <button @click="load">送信</button>
     </section>
     <p><strong>API:</strong> {{ message }}</p>
+    <SumWidget />
   </main>
 </template>
