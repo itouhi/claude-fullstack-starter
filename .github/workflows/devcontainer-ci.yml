@@ -25,6 +25,10 @@ on:
       - ".github/workflows/devcontainer-ci.yml"
   workflow_dispatch:
 
+# GITHUB_TOKEN は最小権限 (checkout のみ。書き込み不要)
+permissions:
+  contents: read
+
 jobs:
   devcontainer:
     runs-on: ubuntu-latest

@@ -23,6 +23,10 @@ on:
       - ".github/workflows/docs-skills-ci.yml"
   workflow_dispatch:
 
+# GITHUB_TOKEN は最小権限 (checkout のみ。書き込み不要)
+permissions:
+  contents: read
+
 jobs:
   # A: スキル frontmatter / B: CLAUDE.md 整合 / C: 日英ペア (外部依存なし)
   validate:
