@@ -49,7 +49,7 @@
           "source.fixAll.eslint": "explicit",
           "source.organizeImports": "explicit"
         },
-        "python.defaultInterpreterPath": "/workspaces/develop/backend/.venv/bin/python",
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/backend/.venv/bin/python",
         "python.testing.pytestEnabled": true,
         "python.testing.pytestArgs": ["backend/tests"],
         "[python]": {

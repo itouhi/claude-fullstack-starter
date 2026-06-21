@@ -1,0 +1,53 @@
+name: Devcontainer CI
+
+# 開発環境そのもの (.devcontainer) の健全性チェック。
+# devcontainer をクリーンビルドし、postCreateCommand (post-create.sh) を実行したうえで
+# backend (pytest) / frontend (build) / Claude CLI のスモークを回す。
+# 利用者の「Use this template → コンテナを開く」と同じコールドスタートを再現し、
+# コンテナを壊す変更を main 前で止める。
+# パスフィルタにより、環境定義や依存マニフェストを変えた PR でのみ実行する。
+
+on:
+  pull_request:
+    paths:
+      - ".devcontainer/**"
+      - "backend/pyproject.toml"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - ".github/workflows/devcontainer-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".devcontainer/**"
+      - "backend/pyproject.toml"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - ".github/workflows/devcontainer-ci.yml"
+  workflow_dispatch:
+
+# GITHUB_TOKEN は最小権限 (checkout のみ。書き込み不要)
+permissions:
+  contents: read
+
+jobs:
+  devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build devcontainer and run smoke checks
+        uses: devcontainers/ci@v0.3
+        with:
+          # ビルドのみ (イメージは push しない)。postCreateCommand はビルド時に実行される。
+          push: never
+          runCmd: |
+            set -euo pipefail
+            echo "== backend smoke (pytest) =="
+            cd backend
+            ./.venv/bin/python -m pytest -q
+            cd ..
+            echo "== frontend smoke (build) =="
+            cd frontend
+            npm run build
+            cd ..
+            echo "== Claude CLI present =="
+            command -v claude
