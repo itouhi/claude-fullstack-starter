@@ -124,5 +124,5 @@
 
   <rect class="box neutral" x="60" y="694" width="1020" height="58"/>
   <text class="t" x="80" y="718" text-anchor="start">block-sandbox-pr.yml</text>
-  <text class="sub" x="80" y="738" text-anchor="start">sandbox/* → main / dev の PR は自動クローズ（誤マージ防止）。 sandbox/** → sandbox/main の PR は許可（検証用）。 ※ pull_request_target は main の定義で動作。</text>
+  <text class="sub" x="80" y="738" text-anchor="start">sandbox/* → main の PR は自動クローズ（誤マージ防止）。 sandbox/** → sandbox/main の PR は許可（検証用）。 ※ pull_request_target は main の定義で動作。</text>
 </svg>
