@@ -1,0 +1,89 @@
+name: Freshness
+
+# 週次の健全性チェック (非ブロッキング)。PR 起点の ci.yml では拾えない
+# 「放置期間中の劣化」をクリーン環境で能動検知する:
+#   - backend: pyproject の >= 範囲で最新解決 → 依存ドリフト
+#   - frontend: クリーン install + build が通るか
+#   - links: 外部 URL を含むリンク腐り (lychee オンライン)
+# backend/frontend が失敗したら freshness-failure ラベルの issue を自動起票/更新する。
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 毎週月曜 00:00 UTC (= 月曜 09:00 JST)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - name: Install deps (clean)
+        run: pip install -e ".[dev]"
+      - name: Pytest
+        run: pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Install deps (clean)
+        run: npm ci
+      - name: Build
+        run: npm run build
+
+  links:
+    # 外部リンク検査 (オンライン)。一時的な 403/429 で flaky なため
+    # continue-on-error で非ブロッキング扱い (結果は Actions UI で確認)。
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check links (external + internal)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            'docs/**/*.md' '*.md' '.claude/skills/**/*.md'
+          fail: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  report:
+    # backend/frontend のいずれかが失敗したときだけ走る。links の flaky は対象外。
+    needs: [backend, frontend]
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Open or update freshness issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          existing=$(gh issue list --repo "$REPO" --label freshness-failure --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$REPO" \
+              --body "$(printf '🔁 週次 freshness が再び失敗しました。\n\n実行ログ: %s' "$RUN_URL")"
+          else
+            gh issue create --repo "$REPO" \
+              --title "[Freshness] 週次健全性チェック失敗" \
+              --label freshness-failure \
+              --body "$(printf '週次の freshness チェック (backend/frontend) が失敗しました。依存ドリフトやクリーン環境での破損の可能性があります。\n\n実行ログ: %s' "$RUN_URL")"
+          fi
