@@ -8,7 +8,7 @@
 A full-stack development template with FastAPI (Python 3.14) + Vue 3 + Vite + TypeScript.
 It ships with a VSCode Dev Container, CI via GitHub Actions, branch protection (Rulesets), Claude Code skills, and development-process documentation.
 
-![Overview diagram](docs/images/overview-diagram.svg)
+![Overview diagram](docs/images/overview-diagram.en.svg)
 
 > See [`docs/`](docs/README.en.md) for structure and process details ([architecture](docs/architecture.en.md) / [development-process](docs/development-process.en.md)).
 
