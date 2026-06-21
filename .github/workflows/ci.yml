@@ -6,6 +6,10 @@ on:
   push:
     branches: [main]
 
+# GITHUB_TOKEN は最小権限 (checkout のみ。書き込み不要)
+permissions:
+  contents: read
+
 jobs:
   backend:
     # sandbox/* PR は block-sandbox-pr で自動クローズされるため CI をスキップ (push は通常どおり実行)
@@ -51,8 +55,10 @@ jobs:
         run: npm ci
       - name: ESLint
         run: npm run lint
-      - name: Type check
-        run: npm run type-check
+      - name: Build (type-check + bundle)
+        # npm run build = vue-tsc -b && vite build。build モードの型チェックは
+        # --noEmit より厳密で、本番ビルドの破損も検出する (由来: #21)
+        run: npm run build
       - name: Unit test (Vitest)
         # frontend テストは未導入のブランチがあるため --if-present で存在時のみ実行
         run: npm run test --if-present
