@@ -11,6 +11,7 @@ Diagrams of this repository's **structure** and **development process**.
 | [architecture.en.md](./architecture.en.md) | Repository structure, tech stack, request flow |
 | [development-process.en.md](./development-process.en.md) | Branch strategy, CI/CD, branch protection (Rulesets), sandbox verification, skill-based flow |
 | [rulesets-setup.en.md](./rulesets-setup.en.md) | How to configure branch protection (Rulesets) (UI / gh CLI) |
+| [switch-to-app-development.en.md](./switch-to-app-development.en.md) | What to remove and how, when turning the template into a real app repository |
 
 ## Big picture
 

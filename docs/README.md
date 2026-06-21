@@ -11,6 +11,7 @@
 | [architecture.md](./architecture.md) | リポジトリ構造・技術スタック・リクエストの流れ |
 | [development-process.md](./development-process.md) | ブランチ戦略・CI/CD・ブランチ保護 (Rulesets)・sandbox 検証・スキル開発フロー |
 | [rulesets-setup.md](./rulesets-setup.md) | ブランチ保護 (Rulesets) の設定手順 (UI / gh CLI) |
+| [switch-to-app-development.md](./switch-to-app-development.md) | テンプレートを実アプリ開発リポジトリへ転換する際の撤去対象と手順 |
 
 ## 全体像
 
