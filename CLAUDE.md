@@ -5,6 +5,9 @@
 - **Frontend:** Vue 3 + Vite + TypeScript — `frontend/`
 - **環境:** VSCode Dev Container (Ubuntu 22.04)
 
+## 開発フロー
+ブランチ運用・コミット規約・PR/マージ条件は [`CONTRIBUTING.md`](CONTRIBUTING.md) と [`docs/development-process.md`](docs/development-process.md) を参照（トランクベース、`main` は PR + CI 必須）。
+
 ## 既存のスキル
 
 機能追加時はまず `.claude/skills/` の該当スキルを確認すること:
