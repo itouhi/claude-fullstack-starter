@@ -1,7 +1,7 @@
 # Project conventions for Claude Code
 
 ## スタック
-- **Backend:** FastAPI (Python 3.12) — `backend/`
+- **Backend:** FastAPI (Python 3.14) — `backend/`
 - **Frontend:** Vue 3 + Vite + TypeScript — `frontend/`
 - **環境:** VSCode Dev Container (Ubuntu 22.04)
 

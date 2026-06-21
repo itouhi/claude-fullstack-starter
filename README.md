@@ -5,7 +5,7 @@
 [![CI](https://github.com/itouhi/claude-fullstack-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/itouhi/claude-fullstack-starter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-FastAPI (Python 3.12) + Vue 3 + Vite + TypeScript のフルスタック開発テンプレート。
+FastAPI (Python 3.14) + Vue 3 + Vite + TypeScript のフルスタック開発テンプレート。
 VSCode Dev Container、GitHub Actions による CI、ブランチ保護 (Rulesets)、Claude Code 用スキルと開発プロセスドキュメントを同梱しています。
 
 ![概要イメージ図](docs/images/overview-diagram.svg)

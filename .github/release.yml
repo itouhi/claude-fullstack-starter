@@ -1,0 +1,28 @@
+# GitHub の自動リリースノート (--generate-notes) のカテゴリ分け設定。
+# release.yml ワークフローがタグ push 時に参照する。
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: ⚠️ Breaking Changes
+      labels:
+        - breaking-change
+    - title: 🚀 Features
+      labels:
+        - feature
+        - enhancement
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+        - fix
+    - title: 🧰 Maintenance / Dependencies
+      labels:
+        - chore
+        - dependencies
+    - title: 📝 Documentation
+      labels:
+        - documentation
+    - title: Other Changes
+      labels:
+        - "*"
