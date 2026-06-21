@@ -1,5 +1,5 @@
 <!--
-sandbox/* を head とし main / dev を base とする PR は自動クローズされます。
+sandbox/* を head とし main を base とする PR は自動クローズされます。
 作業ブランチは feat/* fix/* docs/* ci/* などを使ってください。
 -->
 
