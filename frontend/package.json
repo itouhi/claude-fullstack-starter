@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,vue,css,html,json}\"",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@types/node": "^24.13.2",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/tsconfig": "^0.9.1",

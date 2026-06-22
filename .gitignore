@@ -58,3 +58,7 @@ yarn-error.log*
 # Playwright
 frontend/test-results/
 frontend/playwright-report/
+
+# E2E 録画 (バイナリ・コミットしない)
+accounting-e2e.mp4
+*.mp4
