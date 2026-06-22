@@ -48,7 +48,15 @@ async function execute() {
   <div class="data-mgmt">
     <section>
       <h3>CSVエクスポート (税理士共有)</h3>
-      <label>年度: <input v-model.number="exportYear" type="number" class="year" /></label>
+      <v-text-field
+        v-model.number="exportYear"
+        label="年度"
+        type="number"
+        variant="outlined"
+        density="compact"
+        hide-details
+        class="year"
+      />
       <div class="links">
         <a
           v-for="r in reports"
@@ -63,8 +71,16 @@ async function execute() {
 
     <section>
       <h3>年度繰越</h3>
-      <label>繰越元年度: <input v-model.number="carryYear" type="number" class="year" /></label>
-      <button @click="loadPreview">繰越内容を確認</button>
+      <v-text-field
+        v-model.number="carryYear"
+        label="繰越元年度"
+        type="number"
+        variant="outlined"
+        density="compact"
+        hide-details
+        class="year"
+      />
+      <v-btn color="primary" class="mt-2" @click="loadPreview">繰越内容を確認</v-btn>
 
       <div v-if="preview" class="preview">
         <p>
@@ -72,7 +88,7 @@ async function execute() {
           {{ preview.nextFiscalYear }}年度 期首元入金
           <strong>{{ preview.openingCapitalNext.toLocaleString() }}</strong> 円
         </p>
-        <table>
+        <v-table density="compact">
           <thead>
             <tr>
               <th>繰越科目</th>
@@ -85,11 +101,11 @@ async function execute() {
               <td class="num">{{ b.closingBalance.toLocaleString() }}</td>
             </tr>
           </tbody>
-        </table>
-        <button class="primary" @click="execute">この内容で繰越を実行</button>
+        </v-table>
+        <v-btn color="primary" class="mt-2" @click="execute">この内容で繰越を実行</v-btn>
       </div>
-      <p v-if="message" class="ok">{{ message }}</p>
-      <p v-if="error" class="error">{{ error }}</p>
+      <v-alert v-if="message" type="success" density="compact" class="ok mb-2">{{ message }}</v-alert>
+      <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
     </section>
   </div>
 </template>
@@ -115,27 +131,8 @@ async function execute() {
 .preview {
   margin-top: 0.75rem;
 }
-table {
-  border-collapse: collapse;
-  min-width: 320px;
-}
-th,
-td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
 .num {
   text-align: right;
-}
-.primary {
-  margin-top: 0.5rem;
-}
-.ok {
-  color: #16a34a;
-}
-.error {
-  color: #b91c1c;
 }
 h3 {
   margin-bottom: 0.5rem;

@@ -39,15 +39,22 @@ onMounted(load);
 
 <template>
   <div class="tax">
-    <label>
-      会計年度: <input v-model.number="fiscalYear" type="number" class="year" @change="load" />
-    </label>
+    <v-text-field
+      v-model.number="fiscalYear"
+      type="number"
+      label="会計年度"
+      variant="outlined"
+      density="compact"
+      hide-details
+      class="year"
+      @change="load"
+    />
 
     <template v-if="data">
       <p class="note">
         事業区分: 第{{ data.businessType }}種 / みなし仕入率 {{ data.deemedPurchaseRate * 100 }}%
       </p>
-      <table>
+      <v-table density="compact" class="tax-table">
         <thead>
           <tr>
             <th>税率</th>
@@ -74,12 +81,12 @@ onMounted(load);
             <td class="num highlight">{{ data.totalPayableAmount.toLocaleString() }}</td>
           </tr>
         </tfoot>
-      </table>
-      <button :disabled="data.totalPayableAmount <= 0" @click="finalize">
+      </v-table>
+      <v-btn color="primary" :disabled="data.totalPayableAmount <= 0" @click="finalize">
         納付額を確定 (仕訳計上)
-      </button>
-      <p v-if="message" class="ok">{{ message }}</p>
-      <p v-if="error" class="error">{{ error }}</p>
+      </v-btn>
+      <v-alert v-if="message" type="success" density="compact" class="ok mb-2">{{ message }}</v-alert>
+      <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
     </template>
   </div>
 </template>
@@ -92,22 +99,15 @@ onMounted(load);
   align-items: flex-start;
 }
 .year {
-  width: 6rem;
+  width: 10rem;
 }
 .note {
   color: #6b7280;
   margin: 0;
 }
-table {
+.tax-table {
   width: 100%;
   max-width: 640px;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;
@@ -119,11 +119,5 @@ td {
 tfoot td {
   font-weight: bold;
   border-top: 2px solid #374151;
-}
-.ok {
-  color: #16a34a;
-}
-.error {
-  color: #b91c1c;
 }
 </style>

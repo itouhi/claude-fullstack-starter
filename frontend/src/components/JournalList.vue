@@ -31,7 +31,7 @@ watch(() => props.reloadKey, load);
 </script>
 
 <template>
-  <table class="journal">
+  <v-table density="compact" class="journal">
     <thead>
       <tr>
         <th>日付</th>
@@ -55,19 +55,12 @@ watch(() => props.reloadKey, load);
         <td colspan="5" class="empty">仕訳がありません</td>
       </tr>
     </tbody>
-  </table>
+  </v-table>
 </template>
 
 <style scoped>
 .journal {
   width: 100%;
-  border-collapse: collapse;
-}
-.journal th,
-.journal td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;

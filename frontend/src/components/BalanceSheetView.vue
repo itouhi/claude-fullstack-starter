@@ -25,7 +25,7 @@ watch(() => props.reloadKey, load);
 <template>
   <div v-if="bs" class="bs">
     <div class="columns">
-      <table class="side">
+      <v-table density="compact" class="side">
         <thead>
           <tr>
             <th colspan="2">資産の部</th>
@@ -43,9 +43,9 @@ watch(() => props.reloadKey, load);
             <td class="num">{{ bs.totalAssets.toLocaleString() }}</td>
           </tr>
         </tfoot>
-      </table>
+      </v-table>
 
-      <table class="side">
+      <v-table density="compact" class="side">
         <thead>
           <tr>
             <th colspan="2">負債・純資産の部</th>
@@ -71,7 +71,7 @@ watch(() => props.reloadKey, load);
             <td class="num">{{ (bs.totalLiabilities + bs.totalEquity).toLocaleString() }}</td>
           </tr>
         </tfoot>
-      </table>
+      </v-table>
     </div>
     <p class="check" :class="{ ok: balanced }">
       {{ balanced ? "✓ 貸借一致" : "✗ 貸借不一致" }}
@@ -88,13 +88,6 @@ watch(() => props.reloadKey, load);
 .side {
   flex: 1;
   min-width: 240px;
-  border-collapse: collapse;
-}
-.side th,
-.side td {
-  padding: 0.25rem 0.5rem;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
 }
 .num {
   text-align: right;

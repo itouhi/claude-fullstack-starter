@@ -79,35 +79,71 @@ onMounted(async () => {
 
 <template>
   <div class="expenses">
-    <form class="register" @submit.prevent="register">
+    <v-form class="register" @submit.prevent="register">
       <strong>経費を計上</strong>
-      <label>
-        勘定科目
-        <select v-model="expenseAccountCode" required>
-          <option value="" disabled>選択</option>
-          <option v-for="a in expenseAccounts" :key="a.code" :value="a.code">{{ a.name }}</option>
-        </select>
-      </label>
-      <label>金額(税込) <input v-model.number="amount" type="number" min="1" required /></label>
-      <label>
-        支払方法
-        <select v-model="creditAccountCode">
-          <option value="101">現金</option>
-          <option value="102">普通預金</option>
-          <option value="305">未払 (後払い)</option>
-        </select>
-      </label>
-      <label v-if="isPayable">取引先 <input v-model="counterparty" placeholder="C社" /></label>
-      <label>日付 <input v-model="expenseDate" type="date" required /></label>
-      <label class="grow"
-        >摘要 <input v-model="description" placeholder="通信費 など" required
-      /></label>
-      <button type="submit">経費計上</button>
-    </form>
-    <p v-if="error" class="error">{{ error }}</p>
+      <v-select
+        v-model="expenseAccountCode"
+        label="勘定科目"
+        variant="outlined"
+        density="compact"
+        hide-details
+        :items="expenseAccounts"
+        item-title="name"
+        item-value="code"
+        required
+      />
+      <v-text-field
+        v-model.number="amount"
+        label="金額(税込)"
+        variant="outlined"
+        density="compact"
+        hide-details
+        type="number"
+        min="1"
+        required
+      />
+      <v-select
+        v-model="creditAccountCode"
+        label="支払方法"
+        variant="outlined"
+        density="compact"
+        hide-details
+        :items="[{title:'現金',value:'101'},{title:'普通預金',value:'102'},{title:'未払 (後払い)',value:'305'}]"
+      />
+      <v-text-field
+        v-if="isPayable"
+        v-model="counterparty"
+        label="取引先"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="C社"
+      />
+      <v-text-field
+        v-model="expenseDate"
+        label="日付"
+        variant="outlined"
+        density="compact"
+        hide-details
+        type="date"
+        required
+      />
+      <v-text-field
+        v-model="description"
+        label="摘要"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="通信費 など"
+        required
+        class="grow"
+      />
+      <v-btn color="primary" type="submit">経費計上</v-btn>
+    </v-form>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
 
     <h3>未払金</h3>
-    <table>
+    <v-table density="compact">
       <thead>
         <tr>
           <th>取引先</th>
@@ -119,13 +155,13 @@ onMounted(async () => {
         <tr v-for="row in payables" :key="row.counterparty">
           <td>{{ row.counterparty }}</td>
           <td class="num">{{ row.balance.toLocaleString() }}</td>
-          <td><button class="link" @click="pay(row)">全額支払</button></td>
+          <td><v-btn variant="text" size="small" @click="pay(row)">全額支払</v-btn></td>
         </tr>
         <tr v-if="payables.length === 0">
           <td colspan="3" class="empty">未払金はありません</td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
@@ -147,30 +183,12 @@ onMounted(async () => {
 .register .grow {
   flex: 1;
 }
-table {
-  width: 100%;
-  max-width: 520px;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
 .num {
   text-align: right;
 }
 .empty {
   text-align: center;
   color: #6b7280;
-}
-.link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  padding: 0;
 }
 .error {
   color: #b91c1c;

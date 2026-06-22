@@ -18,7 +18,7 @@ watch(() => props.reloadKey, load);
 
 <template>
   <div v-if="pl" class="pl">
-    <table>
+    <v-table density="compact" class="pl-table">
       <tbody>
         <tr class="section">
           <th colspan="2">収益</th>
@@ -47,21 +47,14 @@ watch(() => props.reloadKey, load);
           <td class="num">{{ pl.netIncome.toLocaleString() }}</td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
 <style scoped>
-.pl table {
+.pl-table {
   width: 100%;
   max-width: 480px;
-  border-collapse: collapse;
-}
-td,
-th {
-  padding: 0.25rem 0.5rem;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
 }
 .num {
   text-align: right;

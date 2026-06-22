@@ -76,22 +76,28 @@ onMounted(async () => {
 <template>
   <div class="import-wizard">
     <div class="setup">
-      <label>
-        取込先口座:
-        <select v-model="accountCode">
-          <option v-for="a in cashAccounts()" :key="a.code" :value="a.code">{{ a.name }}</option>
-        </select>
-      </label>
-      <textarea
+      <v-select
+        v-model="accountCode"
+        label="取込先口座"
+        variant="outlined"
+        density="compact"
+        hide-details
+        :items="cashAccounts()"
+        item-title="name"
+        item-value="code"
+      />
+      <v-textarea
         v-model="csvText"
+        variant="outlined"
         rows="5"
+        hide-details
         placeholder="日付,摘要,出金金額(円),入金金額(円),残高(円)"
-      ></textarea>
-      <button @click="runImport">CSV を取り込む</button>
+      />
+      <v-btn color="primary" @click="runImport">CSV を取り込む</v-btn>
     </div>
-    <p v-if="error" class="error">{{ error }}</p>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
 
-    <table v-if="batch" class="candidates">
+    <v-table v-if="batch" density="compact" class="candidates">
       <thead>
         <tr>
           <th>日付</th>
@@ -110,10 +116,16 @@ onMounted(async () => {
           <td class="num">{{ tx.receipt ? tx.receipt.toLocaleString() : "" }}</td>
           <td class="num">{{ tx.payment ? tx.payment.toLocaleString() : "" }}</td>
           <td>
-            <select v-if="tx.status === 'pending'" v-model="counterChoice[tx.id]">
-              <option value="">選択</option>
-              <option v-for="a in accounts" :key="a.code" :value="a.code">{{ a.name }}</option>
-            </select>
+            <v-select
+              v-if="tx.status === 'pending'"
+              v-model="counterChoice[tx.id]"
+              variant="outlined"
+              density="compact"
+              hide-details
+              :items="accounts"
+              item-title="name"
+              item-value="code"
+            />
             <span v-else>{{ counterChoice[tx.id] ? nameOf(counterChoice[tx.id]) : "—" }}</span>
           </td>
           <td>
@@ -123,13 +135,13 @@ onMounted(async () => {
           </td>
           <td class="actions">
             <template v-if="tx.status === 'pending'">
-              <button class="link" @click="confirm(tx.id)">確定</button>
-              <button class="link skip" @click="skip(tx.id)">スキップ</button>
+              <v-btn variant="text" size="small" @click="confirm(tx.id)">確定</v-btn>
+              <v-btn variant="text" size="small" @click="skip(tx.id)">スキップ</v-btn>
             </template>
           </td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
@@ -147,19 +159,8 @@ onMounted(async () => {
   padding: 0.75rem;
   border-radius: 6px;
 }
-textarea {
-  width: 100%;
-  font-family: monospace;
-}
 .candidates {
   width: 100%;
-  border-collapse: collapse;
-}
-.candidates th,
-.candidates td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;
@@ -173,16 +174,6 @@ tr.skipped {
 .actions {
   display: flex;
   gap: 0.5rem;
-}
-.link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  padding: 0;
-}
-.link.skip {
-  color: #6b7280;
 }
 .error {
   color: #b91c1c;

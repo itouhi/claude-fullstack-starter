@@ -65,20 +65,52 @@ onMounted(load);
 
 <template>
   <div class="receivables">
-    <form class="register" @submit.prevent="registerSale">
+    <v-form class="register" @submit.prevent="registerSale">
       <strong>売上を計上 (発生主義)</strong>
-      <label>取引先 <input v-model="counterparty" placeholder="A社" required /></label>
-      <label>金額(税込) <input v-model.number="amount" type="number" min="1" required /></label>
-      <label>日付 <input v-model="saleDate" type="date" required /></label>
-      <label class="grow"
-        >摘要 <input v-model="description" placeholder="コンサル料 など" required
-      /></label>
-      <button type="submit">売上計上</button>
-    </form>
-    <p v-if="error" class="error">{{ error }}</p>
+      <v-text-field
+        v-model="counterparty"
+        label="取引先"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="A社"
+        required
+      />
+      <v-text-field
+        v-model.number="amount"
+        label="金額(税込)"
+        variant="outlined"
+        density="compact"
+        hide-details
+        type="number"
+        min="1"
+        required
+      />
+      <v-text-field
+        v-model="saleDate"
+        label="日付"
+        variant="outlined"
+        density="compact"
+        hide-details
+        type="date"
+        required
+      />
+      <v-text-field
+        v-model="description"
+        label="摘要"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="コンサル料 など"
+        required
+        class="grow"
+      />
+      <v-btn color="primary" type="submit">売上計上</v-btn>
+    </v-form>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
 
     <h3>未入金 (売掛残)</h3>
-    <table>
+    <v-table density="compact">
       <thead>
         <tr>
           <th>取引先</th>
@@ -90,13 +122,13 @@ onMounted(load);
         <tr v-for="row in outstanding" :key="row.counterparty">
           <td>{{ row.counterparty }}</td>
           <td class="num">{{ row.balance.toLocaleString() }}</td>
-          <td><button class="link" @click="collect(row)">全額入金</button></td>
+          <td><v-btn variant="text" size="small" @click="collect(row)">全額入金</v-btn></td>
         </tr>
         <tr v-if="outstanding.length === 0">
           <td colspan="3" class="empty">未入金はありません</td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
@@ -118,30 +150,12 @@ onMounted(load);
 .register .grow {
   flex: 1;
 }
-table {
-  width: 100%;
-  max-width: 520px;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
 .num {
   text-align: right;
 }
 .empty {
   text-align: center;
   color: #6b7280;
-}
-.link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  padding: 0;
 }
 .error {
   color: #b91c1c;

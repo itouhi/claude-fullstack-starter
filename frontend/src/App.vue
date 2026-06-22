@@ -1,10 +1,13 @@
 <script setup lang="ts">
 /**
- * 会計システムのシェル。Phase 1 (記帳基盤) の各機能をタブで切り替える。
+ * 会計システムのシェル (Vuetify 3)。
  *
- * 由来: 全体基本設計 §1.1 (SPA + BFF) / マイルストーン Phase 1。
+ * 左サイドのナビゲーションドロワーで機能を選び、選択した画面のみを `<component :is>`
+ * で都度マウントする (呼び出し時にタグ配置 = 遅延レンダリング)。
+ *
+ * 由来: 全体基本設計 §1.1 (SPA + BFF) / UI モダン化 (Vuetify)。
  */
-import { ref } from "vue";
+import { computed, ref, shallowRef } from "vue";
 import JournalEntryForm from "@/components/JournalEntryForm.vue";
 import JournalList from "@/components/JournalList.vue";
 import CashBook from "@/components/CashBook.vue";
@@ -18,172 +21,114 @@ import DashboardView from "@/components/DashboardView.vue";
 import ImportWizard from "@/components/ImportWizard.vue";
 import TaxView from "@/components/TaxView.vue";
 import VoucherView from "@/components/VoucherView.vue";
-import DataManagementView from "@/components/DataManagementView.vue";
 import ReceivableView from "@/components/ReceivableView.vue";
 import ExpenseView from "@/components/ExpenseView.vue";
+import DataManagementView from "@/components/DataManagementView.vue";
 
-type Tab =
-  | "dashboard"
-  | "entry"
-  | "cash-book"
-  | "receivables"
-  | "expenses"
-  | "import"
-  | "journal"
-  | "ledger"
-  | "trial-balance"
-  | "pl"
-  | "bs"
-  | "fixed-assets"
-  | "blue-return"
-  | "tax"
-  | "voucher"
-  | "data";
-const tabs: { key: Tab; label: string }[] = [
-  { key: "dashboard", label: "ダッシュボード" },
-  { key: "entry", label: "仕訳入力" },
-  { key: "cash-book", label: "出納帳" },
-  { key: "receivables", label: "売上・売掛" },
-  { key: "expenses", label: "経費" },
-  { key: "import", label: "CSV取込" },
-  { key: "journal", label: "仕訳帳" },
-  { key: "ledger", label: "総勘定元帳" },
-  { key: "trial-balance", label: "試算表" },
-  { key: "pl", label: "損益計算書" },
-  { key: "bs", label: "貸借対照表" },
-  { key: "fixed-assets", label: "固定資産" },
-  { key: "blue-return", label: "青色申告決算書" },
-  { key: "tax", label: "消費税" },
-  { key: "voucher", label: "証憑保存" },
-  { key: "data", label: "データ管理" },
+type ScreenComponent = ReturnType<typeof shallowRef>["value"];
+
+interface Screen {
+  key: string;
+  title: string;
+  icon: string;
+  group: string;
+  component: ScreenComponent;
+}
+
+/** ナビに並べる画面定義 (グループ単位)。 */
+const screens: Screen[] = [
+  { key: "dashboard", title: "ダッシュボード", icon: "mdi-view-dashboard", group: "記帳", component: DashboardView },
+  { key: "entry", title: "仕訳入力", icon: "mdi-pencil-plus", group: "記帳", component: JournalEntryForm },
+  { key: "cash-book", title: "出納帳", icon: "mdi-cash-register", group: "記帳", component: CashBook },
+  { key: "receivables", title: "売上・売掛", icon: "mdi-cash-plus", group: "記帳", component: ReceivableView },
+  { key: "expenses", title: "経費", icon: "mdi-cash-minus", group: "記帳", component: ExpenseView },
+  { key: "import", title: "CSV取込", icon: "mdi-file-delimited", group: "記帳", component: ImportWizard },
+  { key: "journal", title: "仕訳帳", icon: "mdi-book-open-variant", group: "帳簿", component: JournalList },
+  { key: "ledger", title: "総勘定元帳", icon: "mdi-book-multiple", group: "帳簿", component: GeneralLedgerView },
+  { key: "trial-balance", title: "試算表", icon: "mdi-scale-balance", group: "帳簿", component: TrialBalanceView },
+  { key: "pl", title: "損益計算書", icon: "mdi-chart-line", group: "帳簿", component: ProfitAndLossView },
+  { key: "bs", title: "貸借対照表", icon: "mdi-chart-box-outline", group: "帳簿", component: BalanceSheetView },
+  { key: "fixed-assets", title: "固定資産", icon: "mdi-desktop-classic", group: "決算・申告", component: FixedAssetsView },
+  { key: "blue-return", title: "青色申告決算書", icon: "mdi-file-document-outline", group: "決算・申告", component: BlueReturnView },
+  { key: "tax", title: "消費税", icon: "mdi-receipt-text-outline", group: "決算・申告", component: TaxView },
+  { key: "voucher", title: "証憑保存", icon: "mdi-paperclip", group: "決算・申告", component: VoucherView },
+  { key: "data", title: "データ管理", icon: "mdi-database-cog-outline", group: "決算・申告", component: DataManagementView },
 ];
-const tab = ref<Tab>("dashboard");
-const reloadKey = ref(0);
 
-function onCreated(next: Tab = "journal") {
+const groups = ["記帳", "帳簿", "決算・申告"];
+
+const current = ref("dashboard");
+const reloadKey = ref(0);
+const drawer = ref(true);
+
+const activeScreen = computed(() => screens.find((s) => s.key === current.value) ?? screens[0]);
+
+function select(key: string): void {
+  current.value = key;
+}
+
+/** 子の作成イベントで再読込キーを進め、仕訳入力からは仕訳帳へ遷移する。 */
+function onCreated(): void {
   reloadKey.value += 1;
-  tab.value = next;
+  if (current.value === "entry") current.value = "journal";
 }
 </script>
 
 <template>
-  <div class="app">
-    <header>
-      <h1>会計システム</h1>
-      <p class="subtitle">個人事業主向け / 複式簿記・青色申告対応</p>
-    </header>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" :width="240">
+      <v-list-item class="brand" title="会計システム" subtitle="個人事業主向け" />
+      <v-divider />
+      <template v-for="group in groups" :key="group">
+        <v-list-subheader>{{ group }}</v-list-subheader>
+        <v-list density="compact" nav>
+          <v-list-item
+            v-for="screen in screens.filter((s) => s.group === group)"
+            :key="screen.key"
+            :prepend-icon="screen.icon"
+            :title="screen.title"
+            :active="current === screen.key"
+            @click="select(screen.key)"
+          />
+        </v-list>
+      </template>
+    </v-navigation-drawer>
 
-    <nav>
-      <button
-        v-for="t in tabs"
-        :key="t.key"
-        :class="{ active: tab === t.key }"
-        @click="tab = t.key"
-      >
-        {{ t.label }}
-      </button>
-    </nav>
+    <v-app-bar :elevation="1" color="primary">
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-app-bar-title>{{ activeScreen.title }}</v-app-bar-title>
+      <template #append>
+        <span class="app-tag">複式簿記・青色申告対応</span>
+      </template>
+    </v-app-bar>
 
-    <main>
-      <section v-show="tab === 'dashboard'">
-        <h2>ダッシュボード</h2>
-        <DashboardView :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'entry'">
-        <h2>仕訳入力</h2>
-        <JournalEntryForm @created="onCreated('journal')" />
-      </section>
-      <section v-show="tab === 'cash-book'">
-        <h2>出納帳</h2>
-        <CashBook :reload-key="reloadKey" @created="reloadKey++" />
-      </section>
-      <section v-show="tab === 'receivables'">
-        <h2>売上・売掛</h2>
-        <ReceivableView @created="reloadKey++" />
-      </section>
-      <section v-show="tab === 'expenses'">
-        <h2>経費</h2>
-        <ExpenseView @created="reloadKey++" />
-      </section>
-      <section v-show="tab === 'import'">
-        <h2>CSV明細取込</h2>
-        <ImportWizard @created="reloadKey++" />
-      </section>
-      <section v-show="tab === 'journal'">
-        <h2>仕訳帳</h2>
-        <JournalList :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'ledger'">
-        <h2>総勘定元帳</h2>
-        <GeneralLedgerView :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'trial-balance'">
-        <h2>合計残高試算表</h2>
-        <TrialBalanceView :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'pl'">
-        <h2>損益計算書</h2>
-        <ProfitAndLossView :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'bs'">
-        <h2>貸借対照表</h2>
-        <BalanceSheetView :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'fixed-assets'">
-        <h2>固定資産・減価償却</h2>
-        <FixedAssetsView @created="reloadKey++" />
-      </section>
-      <section v-show="tab === 'blue-return'">
-        <h2>青色申告決算書</h2>
-        <BlueReturnView :reload-key="reloadKey" />
-      </section>
-      <section v-show="tab === 'tax'">
-        <h2>消費税 (簡易課税)</h2>
-        <TaxView @created="reloadKey++" />
-      </section>
-      <section v-show="tab === 'voucher'">
-        <h2>証憑保存 (電帳法)</h2>
-        <VoucherView />
-      </section>
-      <section v-show="tab === 'data'">
-        <h2>データ管理</h2>
-        <DataManagementView @created="reloadKey++" />
-      </section>
-    </main>
-  </div>
+    <v-main>
+      <v-container>
+        <v-card class="pa-4">
+          <v-card-title class="text-h6">{{ activeScreen.title }}</v-card-title>
+          <v-card-text>
+            <!-- 呼び出し時にのみマウント (key で画面切替ごとに再生成) -->
+            <component
+              :is="activeScreen.component"
+              :key="current"
+              :reload-key="reloadKey"
+              @created="onCreated"
+            />
+          </v-card-text>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <style scoped>
-.app {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-header h1 {
-  margin-bottom: 0.25rem;
-}
-.subtitle {
-  color: #6b7280;
-  margin-top: 0;
-}
-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
-  margin-bottom: 1rem;
-}
-nav button {
-  background: none;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-}
-nav button.active {
-  border-bottom-color: #2563eb;
-  color: #2563eb;
+.brand :deep(.v-list-item-title) {
   font-weight: bold;
+  font-size: 1.1rem;
+}
+.app-tag {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-right: 0.5rem;
 }
 </style>

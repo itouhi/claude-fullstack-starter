@@ -26,7 +26,7 @@ watch(() => props.reloadKey, load);
 
 <template>
   <div v-if="tb">
-    <table class="tb">
+    <v-table density="compact" class="tb">
       <thead>
         <tr>
           <th>区分</th>
@@ -56,20 +56,13 @@ watch(() => props.reloadKey, load);
           <td class="num">{{ tb.debitTotal === tb.creditTotal ? "✓ 貸借一致" : "✗ 不一致" }}</td>
         </tr>
       </tfoot>
-    </table>
+    </v-table>
   </div>
 </template>
 
 <style scoped>
 .tb {
   width: 100%;
-  border-collapse: collapse;
-}
-.tb th,
-.tb td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;

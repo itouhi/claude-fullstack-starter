@@ -89,31 +89,79 @@ onMounted(loadAssets);
 
 <template>
   <div class="fixed-assets">
-    <form class="register" @submit.prevent="register">
-      <input v-model="name" placeholder="資産名 (例: ノートPC)" required />
-      <label>取得日 <input v-model="acquisitionDate" type="date" required /></label>
-      <label
-        >取得価額 <input v-model.number="acquisitionCost" type="number" min="1" required
-      /></label>
-      <label
-        >耐用年数 <input v-model.number="usefulLifeYears" type="number" min="1" required
-      /></label>
-      <label
-        >事業割合% <input v-model.number="businessUseRatio" type="number" min="1" max="100"
-      /></label>
-      <label v-if="eligibleForSpecial" class="special">
-        <input v-model="useSmallAmountSpecial" type="checkbox" /> 少額特例 (即時償却)
-      </label>
-      <button type="submit">資産を登録</button>
-    </form>
-    <p v-if="error" class="error">{{ error }}</p>
+    <v-form class="register" @submit.prevent="register">
+      <v-text-field
+        v-model="name"
+        placeholder="資産名 (例: ノートPC)"
+        label="資産名 (例: ノートPC)"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model="acquisitionDate"
+        label="取得日"
+        type="date"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model.number="acquisitionCost"
+        label="取得価額"
+        type="number"
+        min="1"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model.number="usefulLifeYears"
+        label="耐用年数"
+        type="number"
+        min="1"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model.number="businessUseRatio"
+        label="事業割合%"
+        type="number"
+        min="1"
+        max="100"
+        variant="outlined"
+        density="compact"
+        hide-details
+      />
+      <v-checkbox
+        v-if="eligibleForSpecial"
+        v-model="useSmallAmountSpecial"
+        label="少額特例 (即時償却)"
+        density="compact"
+        hide-details
+      />
+      <v-btn type="submit" color="primary">資産を登録</v-btn>
+    </v-form>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
 
     <div class="depreciate-bar">
       減価償却を計上する年度:
-      <input v-model.number="depreciationYear" type="number" class="year" />
+      <v-text-field
+        v-model.number="depreciationYear"
+        type="number"
+        variant="outlined"
+        density="compact"
+        hide-details
+        class="year"
+      />
     </div>
 
-    <table class="assets">
+    <v-table density="compact" class="assets">
       <thead>
         <tr>
           <th>資産名</th>
@@ -132,19 +180,19 @@ onMounted(loadAssets);
           <td class="num">{{ a.bookValue.toLocaleString() }}</td>
           <td>{{ statusLabels[a.status] }}</td>
           <td class="actions">
-            <button class="link" @click="showSchedule(a)">予定表</button>
-            <button class="link" @click="depreciate(a)">当期償却を計上</button>
+            <v-btn variant="text" size="small" @click="showSchedule(a)">予定表</v-btn>
+            <v-btn variant="text" size="small" @click="depreciate(a)">当期償却を計上</v-btn>
           </td>
         </tr>
         <tr v-if="assets.length === 0">
           <td colspan="6" class="empty">固定資産がありません</td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
 
     <div v-if="selectedAssetId !== null" class="schedule">
       <h3>償却予定表</h3>
-      <table>
+      <v-table density="compact">
         <thead>
           <tr>
             <th>年度</th>
@@ -165,7 +213,7 @@ onMounted(loadAssets);
             <td class="num">{{ row.closingBookValue.toLocaleString() }}</td>
           </tr>
         </tbody>
-      </table>
+      </v-table>
     </div>
   </div>
 </template>
@@ -185,24 +233,13 @@ onMounted(loadAssets);
   padding: 0.75rem;
   border-radius: 6px;
 }
-.register input[type="number"] {
-  width: 7rem;
-}
-.special {
-  color: #b45309;
+.depreciate-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .depreciate-bar .year {
   width: 6rem;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;
@@ -214,15 +251,5 @@ td {
 .empty {
   text-align: center;
   color: #6b7280;
-}
-.link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  padding: 0;
-}
-.error {
-  color: #b91c1c;
 }
 </style>

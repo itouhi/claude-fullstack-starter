@@ -18,22 +18,22 @@ watch(() => props.reloadKey, load);
 
 <template>
   <section v-if="data" class="cards">
-    <div class="card">
-      <span class="label">当期売上高</span>
-      <span class="value">¥{{ data.revenueTotal.toLocaleString() }}</span>
-    </div>
-    <div class="card" :class="{ profit: data.netIncome >= 0, loss: data.netIncome < 0 }">
-      <span class="label">当期純利益</span>
-      <span class="value">¥{{ data.netIncome.toLocaleString() }}</span>
-    </div>
-    <div class="card">
-      <span class="label">現預金残高</span>
-      <span class="value">¥{{ data.cashBalance.toLocaleString() }}</span>
-    </div>
-    <div class="card">
-      <span class="label">未入金 (売掛金)</span>
-      <span class="value">¥{{ data.receivablesBalance.toLocaleString() }}</span>
-    </div>
+    <v-card class="card" variant="outlined">
+      <v-card-subtitle class="label">当期売上高</v-card-subtitle>
+      <v-card-title class="value">¥{{ data.revenueTotal.toLocaleString() }}</v-card-title>
+    </v-card>
+    <v-card class="card" :class="{ profit: data.netIncome >= 0, loss: data.netIncome < 0 }" variant="outlined">
+      <v-card-subtitle class="label">当期純利益</v-card-subtitle>
+      <v-card-title class="value">¥{{ data.netIncome.toLocaleString() }}</v-card-title>
+    </v-card>
+    <v-card class="card" variant="outlined">
+      <v-card-subtitle class="label">現預金残高</v-card-subtitle>
+      <v-card-title class="value">¥{{ data.cashBalance.toLocaleString() }}</v-card-title>
+    </v-card>
+    <v-card class="card" variant="outlined">
+      <v-card-subtitle class="label">未入金 (売掛金)</v-card-subtitle>
+      <v-card-title class="value">¥{{ data.receivablesBalance.toLocaleString() }}</v-card-title>
+    </v-card>
   </section>
 </template>
 
@@ -43,14 +43,6 @@ watch(() => props.reloadKey, load);
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
 }
-.card {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
 .card .label {
   color: #6b7280;
   font-size: 0.9rem;
@@ -58,6 +50,7 @@ watch(() => props.reloadKey, load);
 .card .value {
   font-size: 1.8rem;
   font-weight: bold;
+  white-space: normal;
 }
 .card.profit .value {
   color: #16a34a;

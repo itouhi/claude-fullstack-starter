@@ -72,30 +72,72 @@ watch(() => props.reloadKey, loadBook);
 
 <template>
   <div class="cash-book">
-    <label class="account-select">
-      口座:
-      <select v-model="accountCode">
-        <option v-for="a in cashAccounts" :key="a.code" :value="a.code">{{ a.name }}</option>
-      </select>
-    </label>
+    <v-select
+      v-model="accountCode"
+      :items="cashAccounts"
+      item-title="name"
+      item-value="code"
+      label="口座"
+      variant="outlined"
+      density="compact"
+      hide-details
+      class="account-select"
+    />
 
-    <form class="quick-entry" @submit.prevent="submit">
-      <select v-model="direction">
-        <option value="receipt">入金</option>
-        <option value="payment">出金</option>
-      </select>
-      <select v-model="counterCode" required>
-        <option value="" disabled>相手科目</option>
-        <option v-for="a in counterAccounts" :key="a.code" :value="a.code">{{ a.name }}</option>
-      </select>
-      <input v-model.number="amount" type="number" min="1" placeholder="金額" required />
-      <input v-model="description" placeholder="摘要" required />
-      <input v-model="entryDate" type="date" required />
-      <button type="submit" :disabled="submitting">記帳</button>
-    </form>
-    <p v-if="error" class="error">{{ error }}</p>
+    <v-form class="quick-entry" @submit.prevent="submit">
+      <v-select
+        v-model="direction"
+        :items="[{ title: '入金', value: 'receipt' }, { title: '出金', value: 'payment' }]"
+        label="区分"
+        variant="outlined"
+        density="compact"
+        hide-details
+      />
+      <v-select
+        v-model="counterCode"
+        :items="counterAccounts"
+        item-title="name"
+        item-value="code"
+        label="相手科目"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model.number="amount"
+        type="number"
+        min="1"
+        label="金額"
+        placeholder="金額"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model="description"
+        label="摘要"
+        placeholder="摘要"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model="entryDate"
+        type="date"
+        label="日付"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-btn color="primary" type="submit" :disabled="submitting">記帳</v-btn>
+    </v-form>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
 
-    <table v-if="book" class="book">
+    <v-table v-if="book" class="book">
       <thead>
         <tr>
           <th>日付</th>
@@ -125,7 +167,7 @@ watch(() => props.reloadKey, loadBook);
           <td class="num">{{ book.closingBalance.toLocaleString() }}</td>
         </tr>
       </tfoot>
-    </table>
+    </v-table>
   </div>
 </template>
 

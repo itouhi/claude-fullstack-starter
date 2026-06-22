@@ -83,15 +83,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <form class="entry-form" @submit.prevent="submit">
+  <v-form class="entry-form" @submit.prevent="submit">
     <div class="header">
-      <label>日付 <input v-model="entryDate" type="date" required /></label>
-      <label class="grow"
-        >摘要 <input v-model="description" placeholder="役務提供売上 など" required
-      /></label>
+      <v-text-field
+        v-model="entryDate"
+        label="日付"
+        variant="outlined"
+        density="compact"
+        hide-details
+        type="date"
+        required
+      />
+      <v-text-field
+        v-model="description"
+        label="摘要"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="役務提供売上 など"
+        required
+        class="grow"
+      />
     </div>
 
-    <table class="lines">
+    <v-table class="lines">
       <thead>
         <tr>
           <th>貸借</th>
@@ -104,32 +119,57 @@ onMounted(async () => {
       <tbody>
         <tr v-for="(line, i) in lines" :key="i" :class="line.side">
           <td>
-            <select v-model="line.side">
-              <option value="debit">借方</option>
-              <option value="credit">貸方</option>
-            </select>
+            <v-select
+              v-model="line.side"
+              :items="[{ title: '借方', value: 'debit' }, { title: '貸方', value: 'credit' }]"
+              variant="outlined"
+              density="compact"
+              hide-details
+            />
           </td>
           <td>
-            <select v-model="line.accountCode" required @change="onAccountChange(line)">
-              <option value="" disabled>選択</option>
-              <option v-for="a in accounts" :key="a.code" :value="a.code">{{ a.name }}</option>
-            </select>
+            <v-select
+              v-model="line.accountCode"
+              :items="accounts"
+              item-title="name"
+              item-value="code"
+              variant="outlined"
+              density="compact"
+              hide-details
+              required
+              @update:model-value="onAccountChange(line)"
+            />
           </td>
-          <td><input v-model.number="line.amount" type="number" min="1" required /></td>
           <td>
-            <select v-model="line.taxCode">
-              <option value="">—</option>
-              <option v-for="t in taxCategories" :key="t.code" :value="t.code">{{ t.name }}</option>
-            </select>
+            <v-text-field
+              v-model.number="line.amount"
+              type="number"
+              min="1"
+              variant="outlined"
+              density="compact"
+              hide-details
+              required
+            />
           </td>
-          <td><button type="button" class="link" @click="removeLine(i)">削除</button></td>
+          <td>
+            <v-select
+              v-model="line.taxCode"
+              :items="[{ title: '—', value: '' }, ...taxCategories.map(t => ({ title: t.name, value: t.code }))]"
+              variant="outlined"
+              density="compact"
+              hide-details
+            />
+          </td>
+          <td>
+            <v-btn variant="text" size="small" color="primary" type="button" @click="removeLine(i)">削除</v-btn>
+          </td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
 
     <div class="actions">
-      <button type="button" class="link" @click="addLine('debit')">+ 借方</button>
-      <button type="button" class="link" @click="addLine('credit')">+ 貸方</button>
+      <v-btn variant="text" size="small" color="primary" type="button" @click="addLine('debit')">+ 借方</v-btn>
+      <v-btn variant="text" size="small" color="primary" type="button" @click="addLine('credit')">+ 貸方</v-btn>
     </div>
 
     <div class="totals" :class="{ ok: balanced, ng: !balanced }">
@@ -138,9 +178,9 @@ onMounted(async () => {
       <span v-else>✗ 不一致</span>
     </div>
 
-    <p v-if="error" class="error">{{ error }}</p>
-    <button type="submit" :disabled="!balanced || submitting">仕訳を登録</button>
-  </form>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
+    <v-btn color="primary" type="submit" :disabled="!balanced || submitting">仕訳を登録</v-btn>
+  </v-form>
 </template>
 
 <style scoped>
@@ -155,9 +195,6 @@ onMounted(async () => {
 }
 .header .grow {
   flex: 1;
-}
-.header input {
-  width: 100%;
 }
 .lines {
   width: 100%;
@@ -174,10 +211,6 @@ onMounted(async () => {
 .lines tr.credit td:first-child {
   border-left: 3px solid #dc2626;
 }
-.lines input,
-.lines select {
-  width: 100%;
-}
 .actions {
   display: flex;
   gap: 1rem;
@@ -190,12 +223,5 @@ onMounted(async () => {
 }
 .error {
   color: #b91c1c;
-}
-.link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  cursor: pointer;
-  padding: 0;
 }
 </style>

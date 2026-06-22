@@ -29,14 +29,18 @@ watch(() => props.reloadKey, load);
 
 <template>
   <div class="ledger">
-    <label>
-      勘定科目:
-      <select v-model="accountCode">
-        <option v-for="a in accounts" :key="a.code" :value="a.code">{{ a.name }}</option>
-      </select>
-    </label>
+    <v-select
+      v-model="accountCode"
+      label="勘定科目"
+      variant="outlined"
+      density="compact"
+      hide-details
+      :items="accounts"
+      item-title="name"
+      item-value="code"
+    />
 
-    <table v-if="ledger" class="gl">
+    <v-table v-if="ledger" density="compact" class="gl">
       <thead>
         <tr>
           <th>日付</th>
@@ -66,7 +70,7 @@ watch(() => props.reloadKey, load);
           <td class="num">{{ ledger.closingBalance.toLocaleString() }}</td>
         </tr>
       </tfoot>
-    </table>
+    </v-table>
   </div>
 </template>
 
@@ -75,16 +79,6 @@ watch(() => props.reloadKey, load);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-.gl {
-  width: 100%;
-  border-collapse: collapse;
-}
-.gl th,
-.gl td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;

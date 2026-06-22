@@ -37,30 +37,41 @@ watch(() => props.reloadKey, load);
 
 <template>
   <div class="blue-return">
-    <label>
-      会計年度:
-      <input v-model.number="fiscalYear" type="number" class="year" />
-    </label>
+    <v-text-field
+      v-model.number="fiscalYear"
+      label="会計年度"
+      type="number"
+      variant="outlined"
+      density="compact"
+      hide-details
+      class="year"
+    />
 
     <template v-if="data">
       <section class="summary">
-        <div class="card">
-          <span class="label">売上 (収益合計)</span>
-          <span class="value">{{ data.profitAndLoss.totalRevenue.toLocaleString() }}</span>
-        </div>
-        <div class="card">
-          <span class="label">経費 (費用合計)</span>
-          <span class="value">{{ data.profitAndLoss.totalExpense.toLocaleString() }}</span>
-        </div>
-        <div class="card highlight">
-          <span class="label">所得金額 (当期純利益)</span>
-          <span class="value">{{ data.profitAndLoss.netIncome.toLocaleString() }}</span>
-        </div>
+        <v-card class="card">
+          <v-card-text>
+            <span class="label">売上 (収益合計)</span>
+            <span class="value">{{ data.profitAndLoss.totalRevenue.toLocaleString() }}</span>
+          </v-card-text>
+        </v-card>
+        <v-card class="card">
+          <v-card-text>
+            <span class="label">経費 (費用合計)</span>
+            <span class="value">{{ data.profitAndLoss.totalExpense.toLocaleString() }}</span>
+          </v-card-text>
+        </v-card>
+        <v-card class="card highlight">
+          <v-card-text>
+            <span class="label">所得金額 (当期純利益)</span>
+            <span class="value">{{ data.profitAndLoss.netIncome.toLocaleString() }}</span>
+          </v-card-text>
+        </v-card>
       </section>
 
       <section>
         <h3>月別売上金額</h3>
-        <table class="monthly">
+        <v-table density="compact" class="monthly">
           <thead>
             <tr>
               <th v-for="n in monthNames" :key="n">{{ n }}</th>
@@ -75,12 +86,12 @@ watch(() => props.reloadKey, load);
               <td class="num total">{{ data.monthlySales.total.toLocaleString() }}</td>
             </tr>
           </tbody>
-        </table>
+        </v-table>
       </section>
 
       <section>
         <h3>減価償却費の計算</h3>
-        <table>
+        <v-table density="compact">
           <thead>
             <tr>
               <th>資産名</th>
@@ -102,7 +113,7 @@ watch(() => props.reloadKey, load);
               <td colspan="5" class="empty">固定資産がありません</td>
             </tr>
           </tbody>
-        </table>
+        </v-table>
       </section>
     </template>
   </div>
@@ -125,34 +136,20 @@ watch(() => props.reloadKey, load);
 .card {
   flex: 1;
   min-width: 160px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 .card .label {
   color: #6b7280;
   font-size: 0.85rem;
+  display: block;
 }
 .card .value {
   font-size: 1.4rem;
   font-weight: bold;
+  display: block;
 }
 .card.highlight {
   border-color: #2563eb;
   background: #eff6ff;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
 }
 .num {
   text-align: right;

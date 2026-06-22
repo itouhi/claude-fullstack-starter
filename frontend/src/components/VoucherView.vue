@@ -50,28 +50,87 @@ onMounted(runSearch);
 
 <template>
   <div class="vouchers">
-    <form class="register" @submit.prevent="register">
+    <v-form class="register" @submit.prevent="register">
       <strong>証憑を登録</strong>
-      <label>取引日 <input v-model="transactionDate" type="date" required /></label>
-      <label>金額 <input v-model.number="amount" type="number" min="0" required /></label>
-      <label>取引先 <input v-model="counterparty" placeholder="ABC商事" required /></label>
-      <label>ファイル名 <input v-model="fileName" placeholder="receipt.pdf" /></label>
-      <button type="submit">登録</button>
-    </form>
-    <p v-if="error" class="error">{{ error }}</p>
+      <v-text-field
+        v-model="transactionDate"
+        type="date"
+        label="取引日"
+        variant="outlined"
+        density="compact"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model.number="amount"
+        type="number"
+        label="金額"
+        variant="outlined"
+        density="compact"
+        hide-details
+        min="0"
+        required
+      />
+      <v-text-field
+        v-model="counterparty"
+        label="取引先"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="ABC商事"
+        required
+      />
+      <v-text-field
+        v-model="fileName"
+        label="ファイル名"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="receipt.pdf"
+      />
+      <v-btn type="submit" color="primary">登録</v-btn>
+    </v-form>
+    <v-alert v-if="error" type="error" density="compact" class="error mb-2">{{ error }}</v-alert>
 
-    <form class="search" @submit.prevent="runSearch">
+    <v-form class="search" @submit.prevent="runSearch">
       <strong>検索 (電帳法3キー)</strong>
-      <label
-        >取引日 <input v-model="search.dateFrom" type="date" /> 〜
-        <input v-model="search.dateTo" type="date"
-      /></label>
-      <label>金額 <input v-model.number="search.amount" type="number" /></label>
-      <label>取引先 <input v-model="search.counterparty" placeholder="部分一致" /></label>
-      <button type="submit">検索</button>
-    </form>
+      <v-text-field
+        v-model="search.dateFrom"
+        type="date"
+        label="取引日 From"
+        variant="outlined"
+        density="compact"
+        hide-details
+      />
+      <span>〜</span>
+      <v-text-field
+        v-model="search.dateTo"
+        type="date"
+        label="取引日 To"
+        variant="outlined"
+        density="compact"
+        hide-details
+      />
+      <v-text-field
+        v-model.number="search.amount"
+        type="number"
+        label="金額"
+        variant="outlined"
+        density="compact"
+        hide-details
+      />
+      <v-text-field
+        v-model="search.counterparty"
+        label="取引先"
+        variant="outlined"
+        density="compact"
+        hide-details
+        placeholder="部分一致"
+      />
+      <v-btn type="submit" color="primary">検索</v-btn>
+    </v-form>
 
-    <table class="results">
+    <v-table density="compact" class="results">
       <thead>
         <tr>
           <th>取引日</th>
@@ -91,7 +150,7 @@ onMounted(runSearch);
           <td colspan="4" class="empty">証憑がありません</td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
@@ -111,24 +170,11 @@ onMounted(runSearch);
   padding: 0.75rem;
   border-radius: 6px;
 }
-.results {
-  width: 100%;
-  border-collapse: collapse;
-}
-.results th,
-.results td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
 .num {
   text-align: right;
 }
 .empty {
   text-align: center;
   color: #6b7280;
-}
-.error {
-  color: #b91c1c;
 }
 </style>
