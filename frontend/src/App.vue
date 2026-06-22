@@ -1,28 +1,119 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { fetchHello } from "@/services/api";
+/**
+ * 会計システムのシェル。Phase 1 (記帳基盤) の各機能をタブで切り替える。
+ *
+ * 由来: 全体基本設計 §1.1 (SPA + BFF) / マイルストーン Phase 1。
+ */
+import { ref } from "vue";
+import JournalEntryForm from "@/components/JournalEntryForm.vue";
+import JournalList from "@/components/JournalList.vue";
+import CashBook from "@/components/CashBook.vue";
+import GeneralLedgerView from "@/components/GeneralLedgerView.vue";
+import TrialBalanceView from "@/components/TrialBalanceView.vue";
+import ProfitAndLossView from "@/components/ProfitAndLossView.vue";
+import BalanceSheetView from "@/components/BalanceSheetView.vue";
 
-const message = ref("loading...");
-const name = ref("world");
+type Tab = "entry" | "cash-book" | "journal" | "ledger" | "trial-balance" | "pl" | "bs";
+const tabs: { key: Tab; label: string }[] = [
+  { key: "entry", label: "仕訳入力" },
+  { key: "cash-book", label: "出納帳" },
+  { key: "journal", label: "仕訳帳" },
+  { key: "ledger", label: "総勘定元帳" },
+  { key: "trial-balance", label: "試算表" },
+  { key: "pl", label: "損益計算書" },
+  { key: "bs", label: "貸借対照表" },
+];
+const tab = ref<Tab>("entry");
+const reloadKey = ref(0);
 
-async function load() {
-  message.value = (await fetchHello(name.value)).message;
+function onCreated(next: Tab = "journal") {
+  reloadKey.value += 1;
+  tab.value = next;
 }
-
-onMounted(load);
 </script>
 
 <template>
-  <main>
-    <h1>develop</h1>
-    <p>Vue 3 + Vite + TypeScript &times; FastAPI</p>
-    <section>
-      <label>
-        name:
-        <input v-model="name" @keyup.enter="load" />
-      </label>
-      <button @click="load">送信</button>
-    </section>
-    <p><strong>API:</strong> {{ message }}</p>
-  </main>
+  <div class="app">
+    <header>
+      <h1>会計システム</h1>
+      <p class="subtitle">個人事業主向け / 複式簿記・青色申告対応</p>
+    </header>
+
+    <nav>
+      <button
+        v-for="t in tabs"
+        :key="t.key"
+        :class="{ active: tab === t.key }"
+        @click="tab = t.key"
+      >
+        {{ t.label }}
+      </button>
+    </nav>
+
+    <main>
+      <section v-show="tab === 'entry'">
+        <h2>仕訳入力</h2>
+        <JournalEntryForm @created="onCreated('journal')" />
+      </section>
+      <section v-show="tab === 'cash-book'">
+        <h2>出納帳</h2>
+        <CashBook :reload-key="reloadKey" @created="reloadKey++" />
+      </section>
+      <section v-show="tab === 'journal'">
+        <h2>仕訳帳</h2>
+        <JournalList :reload-key="reloadKey" />
+      </section>
+      <section v-show="tab === 'ledger'">
+        <h2>総勘定元帳</h2>
+        <GeneralLedgerView :reload-key="reloadKey" />
+      </section>
+      <section v-show="tab === 'trial-balance'">
+        <h2>合計残高試算表</h2>
+        <TrialBalanceView :reload-key="reloadKey" />
+      </section>
+      <section v-show="tab === 'pl'">
+        <h2>損益計算書</h2>
+        <ProfitAndLossView :reload-key="reloadKey" />
+      </section>
+      <section v-show="tab === 'bs'">
+        <h2>貸借対照表</h2>
+        <BalanceSheetView :reload-key="reloadKey" />
+      </section>
+    </main>
+  </div>
 </template>
+
+<style scoped>
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+header h1 {
+  margin-bottom: 0.25rem;
+}
+.subtitle {
+  color: #6b7280;
+  margin-top: 0;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+nav button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+nav button.active {
+  border-bottom-color: #2563eb;
+  color: #2563eb;
+  font-weight: bold;
+}
+</style>
