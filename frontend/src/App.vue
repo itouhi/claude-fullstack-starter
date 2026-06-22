@@ -14,10 +14,14 @@ import ProfitAndLossView from "@/components/ProfitAndLossView.vue";
 import BalanceSheetView from "@/components/BalanceSheetView.vue";
 import FixedAssetsView from "@/components/FixedAssetsView.vue";
 import BlueReturnView from "@/components/BlueReturnView.vue";
+import DashboardView from "@/components/DashboardView.vue";
+import ImportWizard from "@/components/ImportWizard.vue";
 
 type Tab =
+  | "dashboard"
   | "entry"
   | "cash-book"
+  | "import"
   | "journal"
   | "ledger"
   | "trial-balance"
@@ -26,8 +30,10 @@ type Tab =
   | "fixed-assets"
   | "blue-return";
 const tabs: { key: Tab; label: string }[] = [
+  { key: "dashboard", label: "ダッシュボード" },
   { key: "entry", label: "仕訳入力" },
   { key: "cash-book", label: "出納帳" },
+  { key: "import", label: "CSV取込" },
   { key: "journal", label: "仕訳帳" },
   { key: "ledger", label: "総勘定元帳" },
   { key: "trial-balance", label: "試算表" },
@@ -36,7 +42,7 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "fixed-assets", label: "固定資産" },
   { key: "blue-return", label: "青色申告決算書" },
 ];
-const tab = ref<Tab>("entry");
+const tab = ref<Tab>("dashboard");
 const reloadKey = ref(0);
 
 function onCreated(next: Tab = "journal") {
@@ -64,6 +70,10 @@ function onCreated(next: Tab = "journal") {
     </nav>
 
     <main>
+      <section v-show="tab === 'dashboard'">
+        <h2>ダッシュボード</h2>
+        <DashboardView :reload-key="reloadKey" />
+      </section>
       <section v-show="tab === 'entry'">
         <h2>仕訳入力</h2>
         <JournalEntryForm @created="onCreated('journal')" />
@@ -71,6 +81,10 @@ function onCreated(next: Tab = "journal") {
       <section v-show="tab === 'cash-book'">
         <h2>出納帳</h2>
         <CashBook :reload-key="reloadKey" @created="reloadKey++" />
+      </section>
+      <section v-show="tab === 'import'">
+        <h2>CSV明細取込</h2>
+        <ImportWizard @created="reloadKey++" />
       </section>
       <section v-show="tab === 'journal'">
         <h2>仕訳帳</h2>

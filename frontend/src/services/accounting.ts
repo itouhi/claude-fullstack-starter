@@ -231,6 +231,47 @@ export interface BlueReturn {
   depreciation: DepreciationDetail[];
 }
 
+/** ダッシュボードの集約値。 */
+export interface Dashboard {
+  fiscalYear: number | null;
+  revenueTotal: number;
+  netIncome: number;
+  cashBalance: number;
+  receivablesBalance: number;
+}
+
+/** CSV 取込の明細 (仕訳候補)。 */
+export interface ImportedTransaction {
+  id: number;
+  date: string;
+  description: string;
+  payment: number;
+  receipt: number;
+  balanceRef: number | null;
+  suggestedAccountCode: string | null;
+  status: string;
+  journalEntryId: number | null;
+}
+
+/** CSV 取込バッチ。 */
+export interface ImportBatch {
+  id: number;
+  importedAt: string;
+  accountCode: string;
+  filename: string;
+  adapterName: string;
+  status: string;
+  transactions: ImportedTransaction[];
+}
+
+/** CSV 取込リクエスト。 */
+export interface ImportRequest {
+  accountCode: string;
+  csvText: string;
+  adapter?: string;
+  filename?: string;
+}
+
 /** snake_case の API レスポンスを camelCase に変換しつつ JSON を取得する。 */
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`);
@@ -342,6 +383,41 @@ export async function fetchMonthlySales(fiscalYear: number): Promise<MonthlySale
 /** 青色申告決算書データを取得する。 */
 export async function fetchBlueReturn(fiscalYear: number): Promise<BlueReturn> {
   return getJson<BlueReturn>(`/closing/blue-return?fiscal_year=${fiscalYear}`);
+}
+
+/** ダッシュボードの集約値を取得する。 */
+export async function fetchDashboard(fiscalYear?: number): Promise<Dashboard> {
+  const query = fiscalYear ? `?fiscal_year=${fiscalYear}` : "";
+  return getJson<Dashboard>(`/reports/dashboard${query}`);
+}
+
+/** CSV 明細を取り込み、仕訳候補のバッチを返す。 */
+export async function importCsv(payload: ImportRequest): Promise<ImportBatch> {
+  return postJson<ImportBatch>("/imports/csv", payload);
+}
+
+/** 取込バッチの最新状態を取得する。 */
+export async function fetchImportBatch(batchId: number): Promise<ImportBatch> {
+  return getJson<ImportBatch>(`/imports/${batchId}`);
+}
+
+/** 取込明細を確定し、複式仕訳に変換する。相手科目を上書き指定できる。 */
+export async function confirmImportedTransaction(
+  batchId: number,
+  txId: number,
+  counterCode?: string,
+): Promise<JournalEntry> {
+  return postJson<JournalEntry>(`/imports/${batchId}/transactions/${txId}/confirm`, {
+    counterCode: counterCode ?? null,
+  });
+}
+
+/** 取込明細をスキップする。 */
+export async function skipImportedTransaction(
+  batchId: number,
+  txId: number,
+): Promise<ImportedTransaction> {
+  return postJson<ImportedTransaction>(`/imports/${batchId}/transactions/${txId}/skip`, {});
 }
 
 // --- ケース変換ユーティリティ (API は snake_case、フロントは camelCase) ---
