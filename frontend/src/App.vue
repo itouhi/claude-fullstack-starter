@@ -19,11 +19,15 @@ import ImportWizard from "@/components/ImportWizard.vue";
 import TaxView from "@/components/TaxView.vue";
 import VoucherView from "@/components/VoucherView.vue";
 import DataManagementView from "@/components/DataManagementView.vue";
+import ReceivableView from "@/components/ReceivableView.vue";
+import ExpenseView from "@/components/ExpenseView.vue";
 
 type Tab =
   | "dashboard"
   | "entry"
   | "cash-book"
+  | "receivables"
+  | "expenses"
   | "import"
   | "journal"
   | "ledger"
@@ -39,6 +43,8 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "dashboard", label: "ダッシュボード" },
   { key: "entry", label: "仕訳入力" },
   { key: "cash-book", label: "出納帳" },
+  { key: "receivables", label: "売上・売掛" },
+  { key: "expenses", label: "経費" },
   { key: "import", label: "CSV取込" },
   { key: "journal", label: "仕訳帳" },
   { key: "ledger", label: "総勘定元帳" },
@@ -90,6 +96,14 @@ function onCreated(next: Tab = "journal") {
       <section v-show="tab === 'cash-book'">
         <h2>出納帳</h2>
         <CashBook :reload-key="reloadKey" @created="reloadKey++" />
+      </section>
+      <section v-show="tab === 'receivables'">
+        <h2>売上・売掛</h2>
+        <ReceivableView @created="reloadKey++" />
+      </section>
+      <section v-show="tab === 'expenses'">
+        <h2>経費</h2>
+        <ExpenseView @created="reloadKey++" />
       </section>
       <section v-show="tab === 'import'">
         <h2>CSV明細取込</h2>

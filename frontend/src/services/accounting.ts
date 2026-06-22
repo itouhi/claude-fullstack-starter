@@ -335,6 +335,56 @@ export interface YearEndPreview {
   openingCapitalNext: number;
 }
 
+/** 売上計上リクエスト (発生主義)。 */
+export interface SalesRequest {
+  counterparty: string;
+  amount: number;
+  date: string;
+  description: string;
+  taxCode?: string;
+}
+
+/** 売掛入金消込リクエスト。 */
+export interface ReceivablePaymentRequest {
+  counterparty: string;
+  amount: number;
+  date: string;
+  description?: string;
+  depositAccountCode?: string;
+}
+
+/** 取引先別の未入金 (売掛残)。 */
+export interface OutstandingRow {
+  counterparty: string;
+  balance: number;
+}
+
+/** 経費入力リクエスト。 */
+export interface ExpenseRequest {
+  expenseAccountCode: string;
+  amount: number;
+  creditAccountCode: string;
+  taxCode?: string | null;
+  description: string;
+  date: string;
+  counterparty?: string | null;
+}
+
+/** 未払金の支払消込リクエスト。 */
+export interface PayablePaymentRequest {
+  counterparty: string;
+  amount: number;
+  date: string;
+  description?: string;
+  depositAccountCode?: string;
+}
+
+/** 取引先別の未払金残高。 */
+export interface PayableRow {
+  counterparty: string;
+  balance: number;
+}
+
 /** snake_case の API レスポンスを camelCase に変換しつつ JSON を取得する。 */
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`);
@@ -531,6 +581,38 @@ export async function executeCarryForward(fiscalYear: number): Promise<JournalEn
     {},
   );
   return res.openingEntry;
+}
+
+/** 売上を計上する (発生主義)。 */
+export async function createSales(payload: SalesRequest): Promise<JournalEntry> {
+  return postJson<JournalEntry>("/receivables/sales", payload);
+}
+
+/** 売掛金の入金を消し込む。 */
+export async function createReceivablePayment(
+  payload: ReceivablePaymentRequest,
+): Promise<JournalEntry> {
+  return postJson<JournalEntry>("/receivables/payment", payload);
+}
+
+/** 取引先別の未入金 (売掛残) 一覧を取得する。 */
+export async function fetchOutstanding(): Promise<OutstandingRow[]> {
+  return getJson<OutstandingRow[]>("/receivables/outstanding");
+}
+
+/** 経費を計上する。 */
+export async function createExpense(payload: ExpenseRequest): Promise<JournalEntry> {
+  return postJson<JournalEntry>("/expenses", payload);
+}
+
+/** 未払金を支払って消し込む。 */
+export async function payPayable(payload: PayablePaymentRequest): Promise<JournalEntry> {
+  return postJson<JournalEntry>("/expenses/payment", payload);
+}
+
+/** 取引先別の未払金残高一覧を取得する。 */
+export async function fetchPayables(): Promise<PayableRow[]> {
+  return getJson<PayableRow[]>("/expenses/payables");
 }
 
 // --- ケース変換ユーティリティ (API は snake_case、フロントは camelCase) ---
