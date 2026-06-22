@@ -46,6 +46,16 @@
 | 月別売上集計 (M7 F-707) | `app/api/reports.py` | (青色申告決算書に内包) | ✓ | 実装済 |
 | 青色申告決算書 (M8 F-802) | `app/api/closing.py` | `components/BlueReturnView.vue` | ✓ | 実装済 (PL/BS/減価償却/月別売上の集約) |
 
-> backend テスト 25 件パス (ruff/mypy クリーン)、frontend type-check/lint クリーン。
-> 残モジュール (M3 売上売掛・M4 経費・M5のCSV取込・M7のダッシュボード・M8の消費税集計/決算整理
-> ・M9 データ入出力) は基本設計まで完了。実装は並列開発DAGの Layer 順に進める。
+### Phase 3 完了 (効率化)
+CSV明細取込 (M5)・自動仕訳ルール/科目推測 (M2)・ダッシュボード (M7) を実装。
+CSV→仕訳候補→確定→ダッシュボード反映 をブラウザで動作確認済み。
+
+| 機能 | backend | frontend | テスト | 状態 |
+|------|---------|----------|--------|------|
+| ダッシュボード (M7 F-706) | `app/api/reports.py` | `components/DashboardView.vue` | ✓ | 実装済 (売上/利益/現預金/未入金) |
+| 科目推測 (M2 F-105) | `services/account_suggester.py` | (取込候補に内包) | ✓ | 実装済 (摘要キーワード辞書) |
+| CSV明細取込・消込 (M5 F-503/504) | `domain/imports.py` / `services/csv_import.py` / `api/imports.py` | `components/ImportWizard.vue` | ✓ | 実装済 (アダプタ解析→候補→確定/スキップ) |
+
+> backend テスト 31 件パス (ruff/mypy クリーン)、frontend type-check/lint クリーン。
+> 残モジュール (M3 売上売掛・M4 経費・M8の消費税集計/決算整理・M9 データ入出力) は基本設計まで完了。
+> 実装は並列開発DAGの Layer 順に進める (Phase 4: 法令・連携)。
