@@ -10,6 +10,7 @@ from datetime import UTC, datetime
 
 from app.domain.accounts import Account, AccountType, TaxCategory, TaxKind
 from app.domain.fixed_assets import FixedAsset
+from app.domain.imports import ImportBatch
 from app.domain.journal import JournalEntry
 
 
@@ -108,8 +109,11 @@ class AccountingStore:
         self.tax_categories: dict[str, TaxCategory] = {t.code: t for t in STANDARD_TAX_CATEGORIES}
         self.journal_entries: dict[int, JournalEntry] = {}
         self.fixed_assets: dict[int, FixedAsset] = {}
+        self.import_batches: dict[int, ImportBatch] = {}
         self._next_entry_id = 1
         self._next_asset_id = 1
+        self._next_batch_id = 1
+        self._next_tx_id = 1
 
     def next_entry_id(self) -> int:
         """仕訳 ID を採番する。"""
@@ -123,14 +127,29 @@ class AccountingStore:
         self._next_asset_id += 1
         return asset_id
 
+    def next_batch_id(self) -> int:
+        """取込バッチ ID を採番する。"""
+        batch_id = self._next_batch_id
+        self._next_batch_id += 1
+        return batch_id
+
+    def next_tx_id(self) -> int:
+        """取込明細 ID を採番する。"""
+        tx_id = self._next_tx_id
+        self._next_tx_id += 1
+        return tx_id
+
     def reset(self) -> None:
-        """テスト用に仕訳・固定資産をクリアし、マスタを標準セットへ戻す。"""
+        """テスト用に仕訳・固定資産・取込をクリアし、マスタを標準セットへ戻す。"""
         self.accounts = {a.code: a for a in STANDARD_ACCOUNTS}
         self.tax_categories = {t.code: t for t in STANDARD_TAX_CATEGORIES}
         self.journal_entries = {}
         self.fixed_assets = {}
+        self.import_batches = {}
         self._next_entry_id = 1
         self._next_asset_id = 1
+        self._next_batch_id = 1
+        self._next_tx_id = 1
 
 
 #: プロセス共有のストアインスタンス

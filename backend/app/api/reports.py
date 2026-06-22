@@ -373,3 +373,44 @@ def monthly_sales(fiscal_year: int | None = None) -> MonthlySales:
 
     rows = [MonthlySalesRow(month=m, amount=by_month[m]) for m in range(1, 13)]
     return MonthlySales(fiscal_year=fiscal_year, rows=rows, total=sum(r.amount for r in rows))
+
+
+# ダッシュボードで集計する勘定科目コード
+CASH_ACCOUNT_CODES = ("101", "102")  # 現金・普通預金
+RECEIVABLES_ACCOUNT_CODE = "135"  # 売掛金
+
+
+class Dashboard(BaseModel):
+    """ダッシュボードの集約値 (由来: F-706 / reports BD-107)。"""
+
+    fiscal_year: int | None
+    revenue_total: int  # 当期売上高
+    net_income: int  # 当期純利益
+    cash_balance: int  # 現預金残高 (現金 + 普通預金)
+    receivables_balance: int  # 売掛金残高 (未入金)
+
+
+@router.get("/reports/dashboard", response_model=Dashboard)
+def dashboard(fiscal_year: int | None = None) -> Dashboard:
+    """経営状況の主要指標 (売上・利益・資金・未入金) を集約して返す。
+
+    Args:
+        fiscal_year: 指定するとその会計年度の仕訳のみを集計する。
+
+    Returns:
+        当期売上高・当期純利益・現預金残高・売掛金残高。
+    """
+    debit, credit = _aggregate(fiscal_year)
+    revenue_total = _balance_of(SALES_ACCOUNT_CODE, debit, credit)
+    revenues = _rows_for_types({AccountType.REVENUE}, debit, credit)
+    expenses = _rows_for_types({AccountType.EXPENSE}, debit, credit)
+    net_income = sum(r.amount for r in revenues) - sum(r.amount for r in expenses)
+    cash_balance = sum(_balance_of(code, debit, credit) for code in CASH_ACCOUNT_CODES)
+    receivables_balance = _balance_of(RECEIVABLES_ACCOUNT_CODE, debit, credit)
+    return Dashboard(
+        fiscal_year=fiscal_year,
+        revenue_total=revenue_total,
+        net_income=net_income,
+        cash_balance=cash_balance,
+        receivables_balance=receivables_balance,
+    )
