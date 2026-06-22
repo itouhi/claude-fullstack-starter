@@ -62,3 +62,6 @@ frontend/playwright-report/
 # E2E 録画 (バイナリ・コミットしない)
 accounting-e2e.mp4
 *.mp4
+
+# vue-tsc -b が出力する vite.config.ts のコンパイル成果物
+frontend/vite.config.js
