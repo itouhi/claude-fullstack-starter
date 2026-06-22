@@ -62,3 +62,31 @@ jobs:
       - name: Dependency audit (non-blocking)
         run: npm audit --audit-level=high
         continue-on-error: true
+
+  e2e:
+    # Playwright E2E: backend(in-memory) と frontend を起動し全機能を実ブラウザ検証
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - name: Install backend (uvicorn を PATH に)
+        run: pip install -e ".[dev]"
+        working-directory: backend
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+      - name: Install Playwright (Chromium + 依存)
+        run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: E2E (Playwright)
+        run: npm run test:e2e
+        working-directory: frontend

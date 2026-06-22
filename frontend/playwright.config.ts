@@ -24,7 +24,9 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: [
     {
-      command: "bash -c 'cd ../backend && .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000'",
+      // ローカルは backend/.venv、CI は pip install 済みのシステム python で起動
+      command:
+        "bash -c 'cd ../backend && if [ -x .venv/bin/uvicorn ]; then .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000; else python -m uvicorn app.main:app --host 127.0.0.1 --port 8000; fi'",
       url: "http://127.0.0.1:8000/health",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
