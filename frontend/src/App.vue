@@ -12,8 +12,19 @@ import GeneralLedgerView from "@/components/GeneralLedgerView.vue";
 import TrialBalanceView from "@/components/TrialBalanceView.vue";
 import ProfitAndLossView from "@/components/ProfitAndLossView.vue";
 import BalanceSheetView from "@/components/BalanceSheetView.vue";
+import FixedAssetsView from "@/components/FixedAssetsView.vue";
+import BlueReturnView from "@/components/BlueReturnView.vue";
 
-type Tab = "entry" | "cash-book" | "journal" | "ledger" | "trial-balance" | "pl" | "bs";
+type Tab =
+  | "entry"
+  | "cash-book"
+  | "journal"
+  | "ledger"
+  | "trial-balance"
+  | "pl"
+  | "bs"
+  | "fixed-assets"
+  | "blue-return";
 const tabs: { key: Tab; label: string }[] = [
   { key: "entry", label: "仕訳入力" },
   { key: "cash-book", label: "出納帳" },
@@ -22,6 +33,8 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "trial-balance", label: "試算表" },
   { key: "pl", label: "損益計算書" },
   { key: "bs", label: "貸借対照表" },
+  { key: "fixed-assets", label: "固定資産" },
+  { key: "blue-return", label: "青色申告決算書" },
 ];
 const tab = ref<Tab>("entry");
 const reloadKey = ref(0);
@@ -78,6 +91,14 @@ function onCreated(next: Tab = "journal") {
       <section v-show="tab === 'bs'">
         <h2>貸借対照表</h2>
         <BalanceSheetView :reload-key="reloadKey" />
+      </section>
+      <section v-show="tab === 'fixed-assets'">
+        <h2>固定資産・減価償却</h2>
+        <FixedAssetsView @created="reloadKey++" />
+      </section>
+      <section v-show="tab === 'blue-return'">
+        <h2>青色申告決算書</h2>
+        <BlueReturnView :reload-key="reloadKey" />
       </section>
     </main>
   </div>

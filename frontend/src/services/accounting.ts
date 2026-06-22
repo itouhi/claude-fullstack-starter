@@ -162,6 +162,75 @@ export interface BalanceSheet {
   netIncome: number;
 }
 
+/** 固定資産台帳のレコード。 */
+export interface FixedAsset {
+  id: number;
+  name: string;
+  acquisitionDate: string;
+  acquisitionCost: number;
+  usefulLifeYears: number;
+  depreciationMethod: string;
+  businessUseRatio: number;
+  isSmallAmountSpecial: boolean;
+  bookValue: number;
+  accumulatedDepreciation: number;
+  description: string | null;
+  status: string;
+  depreciatedYears: number[];
+}
+
+/** 固定資産の登録リクエスト。 */
+export interface FixedAssetCreate {
+  name: string;
+  acquisitionDate: string;
+  acquisitionCost: number;
+  usefulLifeYears: number;
+  businessUseRatio?: number;
+  useSmallAmountSpecial?: boolean;
+  description?: string | null;
+}
+
+/** 償却スケジュールの1行。 */
+export interface DepreciationEntry {
+  fiscalYear: number;
+  openingBookValue: number;
+  depreciationAmount: number;
+  businessDepreciation: number;
+  privateDepreciation: number;
+  closingBookValue: number;
+}
+
+/** 月別売上の1行。 */
+export interface MonthlySalesRow {
+  month: number;
+  amount: number;
+}
+
+/** 月別売上集計。 */
+export interface MonthlySales {
+  fiscalYear: number | null;
+  rows: MonthlySalesRow[];
+  total: number;
+}
+
+/** 青色申告決算書の減価償却明細1行。 */
+export interface DepreciationDetail {
+  assetName: string;
+  acquisitionCost: number;
+  usefulLifeYears: number;
+  depreciationAmount: number;
+  closingBookValue: number;
+}
+
+/** 青色申告決算書データ (PL/BS/月別売上/減価償却の集約)。 */
+export interface BlueReturn {
+  fiscalYear: number;
+  profitAndLoss: ProfitAndLoss;
+  balanceSheet: BalanceSheet;
+  monthlySales: MonthlySales;
+  depreciation: DepreciationDetail[];
+}
+
 /** snake_case の API レスポンスを camelCase に変換しつつ JSON を取得する。 */
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`);
@@ -240,6 +309,39 @@ export async function createJournalEntry(payload: JournalEntryCreate): Promise<J
 /** 出納帳の簡易入力 (入金/出金) を登録する。裏で複式仕訳に変換される。 */
 export async function createCashEntry(payload: CashEntryRequest): Promise<JournalEntry> {
   return postJson<JournalEntry>("/cash-book/entries", payload);
+}
+
+/** 固定資産台帳の一覧を取得する。 */
+export async function fetchFixedAssets(): Promise<FixedAsset[]> {
+  return getJson<FixedAsset[]>("/fixed-assets");
+}
+
+/** 固定資産を登録する。 */
+export async function createFixedAsset(payload: FixedAssetCreate): Promise<FixedAsset> {
+  return postJson<FixedAsset>("/fixed-assets", payload);
+}
+
+/** 固定資産の償却スケジュールを取得する。 */
+export async function fetchDepreciationSchedule(assetId: number): Promise<DepreciationEntry[]> {
+  return getJson<DepreciationEntry[]>(`/fixed-assets/${assetId}/depreciation-schedule`);
+}
+
+/** 指定年度の減価償却を仕訳計上する。 */
+export async function postDepreciation(assetId: number, fiscalYear: number): Promise<JournalEntry> {
+  return postJson<JournalEntry>(
+    `/fixed-assets/${assetId}/depreciation?fiscal_year=${fiscalYear}`,
+    {},
+  );
+}
+
+/** 月別売上集計を取得する。 */
+export async function fetchMonthlySales(fiscalYear: number): Promise<MonthlySales> {
+  return getJson<MonthlySales>(`/reports/monthly-sales?fiscal_year=${fiscalYear}`);
+}
+
+/** 青色申告決算書データを取得する。 */
+export async function fetchBlueReturn(fiscalYear: number): Promise<BlueReturn> {
+  return getJson<BlueReturn>(`/closing/blue-return?fiscal_year=${fiscalYear}`);
 }
 
 // --- ケース変換ユーティリティ (API は snake_case、フロントは camelCase) ---
