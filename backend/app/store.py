@@ -9,6 +9,7 @@
 from datetime import UTC, datetime
 
 from app.domain.accounts import Account, AccountType, TaxCategory, TaxKind
+from app.domain.fixed_assets import FixedAsset
 from app.domain.journal import JournalEntry
 
 
@@ -106,7 +107,9 @@ class AccountingStore:
         self.accounts: dict[str, Account] = {a.code: a for a in STANDARD_ACCOUNTS}
         self.tax_categories: dict[str, TaxCategory] = {t.code: t for t in STANDARD_TAX_CATEGORIES}
         self.journal_entries: dict[int, JournalEntry] = {}
+        self.fixed_assets: dict[int, FixedAsset] = {}
         self._next_entry_id = 1
+        self._next_asset_id = 1
 
     def next_entry_id(self) -> int:
         """仕訳 ID を採番する。"""
@@ -114,12 +117,20 @@ class AccountingStore:
         self._next_entry_id += 1
         return entry_id
 
+    def next_asset_id(self) -> int:
+        """固定資産 ID を採番する。"""
+        asset_id = self._next_asset_id
+        self._next_asset_id += 1
+        return asset_id
+
     def reset(self) -> None:
-        """テスト用に仕訳をクリアし、マスタを標準セットへ戻す。"""
+        """テスト用に仕訳・固定資産をクリアし、マスタを標準セットへ戻す。"""
         self.accounts = {a.code: a for a in STANDARD_ACCOUNTS}
         self.tax_categories = {t.code: t for t in STANDARD_TAX_CATEGORIES}
         self.journal_entries = {}
+        self.fixed_assets = {}
         self._next_entry_id = 1
+        self._next_asset_id = 1
 
 
 #: プロセス共有のストアインスタンス

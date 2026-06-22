@@ -326,3 +326,50 @@ def balance_sheet(fiscal_year: int | None = None) -> BalanceSheet:
         total_equity=total_equity,
         net_income=net_income,
     )
+
+
+# 売上高の勘定科目コード (月別売上集計の対象)
+SALES_ACCOUNT_CODE = "500"
+
+
+class MonthlySalesRow(BaseModel):
+    """月別売上の1行 (由来: F-707)。"""
+
+    month: int  # 1〜12
+    amount: int
+
+
+class MonthlySales(BaseModel):
+    """月別売上集計 (青色申告決算書の月別欄に対応、由来: F-707)。"""
+
+    fiscal_year: int | None
+    rows: list[MonthlySalesRow]
+    total: int
+
+
+@router.get("/reports/monthly-sales", response_model=MonthlySales)
+def monthly_sales(fiscal_year: int | None = None) -> MonthlySales:
+    """売上高 (科目500) を1〜12月の月別に集計して返す。
+
+    収益は貸方が正のため、各月の (貸方 − 借方) を売上として積み上げる。
+
+    Args:
+        fiscal_year: 指定するとその会計年度の仕訳のみを集計する。
+
+    Returns:
+        12ヶ月分の月別売上と年間合計。
+    """
+    by_month: dict[int, int] = defaultdict(int)
+    for entry in store.journal_entries.values():
+        if entry.status == EntryStatus.DELETED:
+            continue
+        if fiscal_year is not None and entry.fiscal_year != fiscal_year:
+            continue
+        for line in entry.lines:
+            if line.account_code != SALES_ACCOUNT_CODE:
+                continue
+            signed = line.amount if line.side == Side.CREDIT else -line.amount
+            by_month[entry.date.month] += signed
+
+    rows = [MonthlySalesRow(month=m, amount=by_month[m]) for m in range(1, 13)]
+    return MonthlySales(fiscal_year=fiscal_year, rows=rows, total=sum(r.amount for r in rows))
