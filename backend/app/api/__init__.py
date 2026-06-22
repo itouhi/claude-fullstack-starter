@@ -4,11 +4,13 @@ from app.api import (
     accounts,
     cash_book,
     closing,
+    expenses,
     export,
     fixed_assets,
     hello,
     imports,
     journal,
+    receivables,
     reports,
     tax,
     vouchers,
@@ -20,6 +22,8 @@ router.include_router(hello.router, tags=["hello"])
 router.include_router(accounts.router, tags=["masters"])
 router.include_router(journal.router, tags=["journal"])
 router.include_router(cash_book.router, tags=["cash-book"])
+router.include_router(receivables.router, tags=["receivables"])
+router.include_router(expenses.router, tags=["expenses"])
 router.include_router(imports.router, tags=["imports"])
 router.include_router(fixed_assets.router, tags=["fixed-assets"])
 router.include_router(reports.router, tags=["reports"])
