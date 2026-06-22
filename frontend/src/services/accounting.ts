@@ -272,6 +272,69 @@ export interface ImportRequest {
   filename?: string;
 }
 
+/** 税率別の消費税集計。 */
+export interface TaxRateLine {
+  ratePercent: number;
+  taxCode: string;
+  taxableSalesBase: number;
+  taxAmount: number;
+  deductibleAmount: number;
+  payableAmount: number;
+}
+
+/** 消費税 (簡易課税) 集計結果。 */
+export interface ConsumptionTax {
+  fiscalYear: number;
+  businessType: number;
+  deemedPurchaseRate: number;
+  taxRates: TaxRateLine[];
+  totalTaxAmount: number;
+  totalDeductibleAmount: number;
+  totalPayableAmount: number;
+}
+
+/** 証憑。 */
+export interface Voucher {
+  id: number;
+  transactionDate: string;
+  amount: number;
+  counterparty: string;
+  fileName: string;
+  contentBase64: string | null;
+  journalEntryId: number | null;
+  createdAt: string;
+}
+
+/** 証憑の登録リクエスト。 */
+export interface VoucherCreate {
+  transactionDate: string;
+  amount: number;
+  counterparty: string;
+  fileName: string;
+}
+
+/** 証憑の検索条件。 */
+export interface VoucherSearch {
+  dateFrom?: string;
+  dateTo?: string;
+  amount?: number;
+  counterparty?: string;
+}
+
+/** 年度繰越のドライラン結果。 */
+export interface YearEndPreview {
+  fiscalYear: number;
+  nextFiscalYear: number;
+  balanceForward: {
+    accountCode: string;
+    accountName: string;
+    accountType: string;
+    closingBalance: number;
+  }[];
+  netIncome: number;
+  openingCapitalNext: number;
+}
+
 /** snake_case の API レスポンスを camelCase に変換しつつ JSON を取得する。 */
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`);
@@ -418,6 +481,56 @@ export async function skipImportedTransaction(
   txId: number,
 ): Promise<ImportedTransaction> {
   return postJson<ImportedTransaction>(`/imports/${batchId}/transactions/${txId}/skip`, {});
+}
+
+/** 消費税 (簡易課税) 集計を取得する。 */
+export async function fetchConsumptionTax(fiscalYear: number): Promise<ConsumptionTax> {
+  return getJson<ConsumptionTax>(`/tax/consumption?fiscal_year=${fiscalYear}`);
+}
+
+/** 消費税の納付額を確定し仕訳を計上する。 */
+export async function finalizeConsumptionTax(fiscalYear: number): Promise<JournalEntry> {
+  const res = await postJson<{ journalEntry: JournalEntry }>(
+    `/tax/consumption/finalize?fiscal_year=${fiscalYear}`,
+    {},
+  );
+  return res.journalEntry;
+}
+
+/** 証憑を登録する。 */
+export async function createVoucher(payload: VoucherCreate): Promise<Voucher> {
+  return postJson<Voucher>("/vouchers", payload);
+}
+
+/** 証憑を電帳法の3キー (取引日・金額・取引先) で検索する。 */
+export async function searchVouchers(search: VoucherSearch): Promise<Voucher[]> {
+  const params = new URLSearchParams();
+  if (search.dateFrom) params.set("date_from", search.dateFrom);
+  if (search.dateTo) params.set("date_to", search.dateTo);
+  if (search.amount !== undefined) params.set("amount", String(search.amount));
+  if (search.counterparty) params.set("counterparty", search.counterparty);
+  const query = params.toString();
+  return getJson<Voucher[]>(`/vouchers${query ? `?${query}` : ""}`);
+}
+
+/** 帳簿・決算書の CSV ダウンロード URL を返す。 */
+export function exportUrl(report: string, fiscalYear?: number): string {
+  const year = fiscalYear ? `&fiscal_year=${fiscalYear}` : "";
+  return `${BASE_URL}/export/${report}?format=csv${year}`;
+}
+
+/** 年度繰越のドライランを取得する。 */
+export async function fetchCarryForwardPreview(fiscalYear: number): Promise<YearEndPreview> {
+  return getJson<YearEndPreview>(`/year-end/carry-forward/preview?fiscal_year=${fiscalYear}`);
+}
+
+/** 年度繰越を実行する。 */
+export async function executeCarryForward(fiscalYear: number): Promise<JournalEntry> {
+  const res = await postJson<{ openingEntry: JournalEntry }>(
+    `/year-end/carry-forward?fiscal_year=${fiscalYear}`,
+    {},
+  );
+  return res.openingEntry;
 }
 
 // --- ケース変換ユーティリティ (API は snake_case、フロントは camelCase) ---

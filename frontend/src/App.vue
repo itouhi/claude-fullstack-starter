@@ -16,6 +16,9 @@ import FixedAssetsView from "@/components/FixedAssetsView.vue";
 import BlueReturnView from "@/components/BlueReturnView.vue";
 import DashboardView from "@/components/DashboardView.vue";
 import ImportWizard from "@/components/ImportWizard.vue";
+import TaxView from "@/components/TaxView.vue";
+import VoucherView from "@/components/VoucherView.vue";
+import DataManagementView from "@/components/DataManagementView.vue";
 
 type Tab =
   | "dashboard"
@@ -28,7 +31,10 @@ type Tab =
   | "pl"
   | "bs"
   | "fixed-assets"
-  | "blue-return";
+  | "blue-return"
+  | "tax"
+  | "voucher"
+  | "data";
 const tabs: { key: Tab; label: string }[] = [
   { key: "dashboard", label: "ダッシュボード" },
   { key: "entry", label: "仕訳入力" },
@@ -41,6 +47,9 @@ const tabs: { key: Tab; label: string }[] = [
   { key: "bs", label: "貸借対照表" },
   { key: "fixed-assets", label: "固定資産" },
   { key: "blue-return", label: "青色申告決算書" },
+  { key: "tax", label: "消費税" },
+  { key: "voucher", label: "証憑保存" },
+  { key: "data", label: "データ管理" },
 ];
 const tab = ref<Tab>("dashboard");
 const reloadKey = ref(0);
@@ -113,6 +122,18 @@ function onCreated(next: Tab = "journal") {
       <section v-show="tab === 'blue-return'">
         <h2>青色申告決算書</h2>
         <BlueReturnView :reload-key="reloadKey" />
+      </section>
+      <section v-show="tab === 'tax'">
+        <h2>消費税 (簡易課税)</h2>
+        <TaxView @created="reloadKey++" />
+      </section>
+      <section v-show="tab === 'voucher'">
+        <h2>証憑保存 (電帳法)</h2>
+        <VoucherView />
+      </section>
+      <section v-show="tab === 'data'">
+        <h2>データ管理</h2>
+        <DataManagementView @created="reloadKey++" />
       </section>
     </main>
   </div>
