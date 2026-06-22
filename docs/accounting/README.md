@@ -35,5 +35,17 @@
 | 損益計算書 PL (M7 F-704) | `app/api/reports.py` | `components/ProfitAndLossView.vue` | ✓ | 実装済 |
 | 貸借対照表 BS (M7 F-705) | `app/api/reports.py` | `components/BalanceSheetView.vue` | ✓ | 実装済 |
 
-> backend テスト 17 件パス (ruff/mypy クリーン)。Phase 1 以外のモジュール (M3/M4/M6 と
-> M5のCSV取込・M7のダッシュボード/月別売上・M8・M9) は基本設計まで完了。実装は並列開発DAGの Layer 順に進める。
+### Phase 2 完了 (決算機能)
+固定資産・減価償却 (M6) と青色申告決算書 (M8) を実装。減価償却の計算 (定額法/月割/
+備忘1円/少額特例/家事按分) はブラウザで動作確認済み (償却予定表・当期償却の仕訳計上・
+青色申告決算書への集約が整合)。
+
+| 機能 | backend | frontend | テスト | 状態 |
+|------|---------|----------|--------|------|
+| 固定資産・減価償却 (M6 F-601〜603) | `domain/fixed_assets.py` / `services/depreciation.py` / `api/fixed_assets.py` | `components/FixedAssetsView.vue` | ✓ | 実装済 (定額法・月割・少額特例・家事按分) |
+| 月別売上集計 (M7 F-707) | `app/api/reports.py` | (青色申告決算書に内包) | ✓ | 実装済 |
+| 青色申告決算書 (M8 F-802) | `app/api/closing.py` | `components/BlueReturnView.vue` | ✓ | 実装済 (PL/BS/減価償却/月別売上の集約) |
+
+> backend テスト 25 件パス (ruff/mypy クリーン)、frontend type-check/lint クリーン。
+> 残モジュール (M3 売上売掛・M4 経費・M5のCSV取込・M7のダッシュボード・M8の消費税集計/決算整理
+> ・M9 データ入出力) は基本設計まで完了。実装は並列開発DAGの Layer 順に進める。
